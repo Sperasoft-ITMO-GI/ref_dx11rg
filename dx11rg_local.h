@@ -11,7 +11,9 @@
 #include "../client/ref.h"
 #include "../win32/winquake.h"
 
+#include "RenderEngine.h"
 
+RenderDevice RD;
 //#include "dx11_init.h"
 
 

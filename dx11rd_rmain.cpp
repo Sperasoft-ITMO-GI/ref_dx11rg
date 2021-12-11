@@ -15,7 +15,7 @@ cvar_t* vid_ref;
 
 // reading param from config.txt
 void R_Register(void) {
-	
+
 }
 
 bool R_SetMode(int* width, int* height) {
@@ -29,6 +29,10 @@ R_Init
 ===============
 */
 qboolean R_Init(void* hinstance, void* hWnd) {
+
+
+	RD.InitDevice((HWND)hWnd);
+
 	return True;
 }
 
@@ -173,7 +177,7 @@ Fills a box of pixels with a single color
 =============
 */
 void Draw_Fill(int x, int y, int w, int h, int c) {
-	
+
 }
 
 /*
@@ -226,6 +230,8 @@ void R_BeginFrame(float camera_separation) {
 ** function and instead do a call to GLimp_SwapBuffers.
 */
 void GLimp_EndFrame(void) {
+	RD.Clear(200, 200, 200);
+	RD.Present();
 	return;
 }
 
