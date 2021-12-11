@@ -1,0 +1,3 @@
+[submodule "DX11RenderEngine"]
+	path = DX11RenderEngine
+	url = https://github.com/alkonior/DX11RenderEngine.git
