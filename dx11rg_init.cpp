@@ -60,7 +60,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 		ri.FS_FreeFile(shD.data);
 	}
 	Texture text = Texture(10, 10);
-	RD.RegisterTexture("test", text);
+	RD.RegisterTexture(1, text);
 
 
 	return True;

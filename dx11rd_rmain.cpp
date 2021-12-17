@@ -2,78 +2,10 @@
 
 #include "dx11rg_local.h"
 
-viddef_t	vid;
-
 refimport_t	ri;
 
 
-// reading param from config.txt
-void R_Register(void) {
 
-}
-
-
-// ==================================================================================================================================
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_BeginRegistration
-
-Specifies the model that will be used as the world
-@@@@@@@@@@@@@@@@@@@@@
-*/
-void R_BeginRegistration(char* model) {
-	return;
-}
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_RegisterModel
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-struct model_s* R_RegisterModel(char* name) {
-	return NULL;
-}
-
-/*
-===============
-R_RegisterSkin
-===============
-*/
-struct image_s* R_RegisterSkin(char* name) {
-	return NULL;
-}
-
-/*
-=============
-Draw_FindPic
-=============
-*/
-image_t* R_RegisterPic(char* name) {
-
-	return NULL;
-}
-
-/*
-============
-R_SetSky
-============
-*/
-// 3dstudio environment map names
-char* suf[6] = { (char*)"rt", (char*)"bk", (char*)"lf", (char*)"ft", (char*)"up", (char*)"dn" };
-void R_SetSky(char* name, float rotate, vec3_t axis) {
-	return;
-}
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_EndRegistration
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-void R_EndRegistration(void) {
-	return;
-}
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -100,7 +32,7 @@ Draw_Pic
 =============
 */
 void Draw_Pic(int x, int y, char* pic) {
-	RD.DrawImg("test", x, y, 10, 10);
+	RD.DrawImg(1, x, y, 10, 10);
 	return;
 }
 
@@ -110,7 +42,7 @@ Draw_StretchPic
 =============
 */
 void Draw_StretchPic(int x, int y, int w, int h, char* pic) {
-	RD.DrawImg("test", x, y, w, h);
+	RD.DrawImg(1, x, y, w, h);
 	return;
 }
 
@@ -147,7 +79,7 @@ Fills a box of pixels with a single color
 =============
 */
 void Draw_Fill(int x, int y, int w, int h, int c) {
-	RD.DrawImg("test", x, y, w, h);
+	//RD.DrawImg(1, x, y, w, h);
 }
 
 /*

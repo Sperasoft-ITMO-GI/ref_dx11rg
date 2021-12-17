@@ -28,6 +28,7 @@
     <ClInclude Include="DX11RenderEngine\DX11RenderEngine\pch.h" />
     <ClInclude Include="dx11rg_common.h" />
     <ClInclude Include="dx11rg_local.h" />
+    <ClInclude Include="RegistrationManager.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -35,13 +36,15 @@
     <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="dx11rd_rmain.cpp" />
     <ClCompile Include="dx11rg_init.cpp" />
+    <ClCompile Include="dx11rg_reg.cpp" />
+    <ClCompile Include="RegistrationManager.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="DX11RenderEngine\DX11RenderEngine\DX11RenderEngine.vcxproj">
       <Project>{6bd7be35-e16c-474a-b507-9883ae657e1e}</Project>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
