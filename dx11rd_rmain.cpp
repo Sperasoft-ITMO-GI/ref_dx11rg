@@ -100,6 +100,7 @@ Draw_Pic
 =============
 */
 void Draw_Pic(int x, int y, char* pic) {
+	RD.DrawImg("test", x, y, 10, 10);
 	return;
 }
 
@@ -109,6 +110,7 @@ Draw_StretchPic
 =============
 */
 void Draw_StretchPic(int x, int y, int w, int h, char* pic) {
+	RD.DrawImg("test", x, y, w, h);
 	return;
 }
 
@@ -145,7 +147,7 @@ Fills a box of pixels with a single color
 =============
 */
 void Draw_Fill(int x, int y, int w, int h, int c) {
-
+	RD.DrawImg("test", x, y, w, h);
 }
 
 /*

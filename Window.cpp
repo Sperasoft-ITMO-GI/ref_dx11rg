@@ -68,8 +68,8 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 		x = 0;
 		y = 0;
 	} else {
-		x = top;
-		y = left;
+		x = left;
+		y = top;
 	}
 
 

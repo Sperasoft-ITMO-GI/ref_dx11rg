@@ -18,6 +18,9 @@
     <None Include="ref_dx11rg.def">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="..\baseq2\config.cfg">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\client\ref.h">
@@ -55,5 +58,13 @@
     <ClCompile Include="dx11rg_init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\baseq2\PixelShader2D.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
+    <FxCompile Include="..\baseq2\VertexShader2D.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
