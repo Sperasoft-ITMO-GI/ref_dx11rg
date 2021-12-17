@@ -6,44 +6,12 @@ viddef_t	vid;
 
 refimport_t	ri;
 
-cvar_t* dx11_mode;
-cvar_t* vid_fullscreen;
-cvar_t* vid_gamma;
-cvar_t* vid_ref;
-
-
 
 // reading param from config.txt
 void R_Register(void) {
 
 }
 
-bool R_SetMode(int* width, int* height) {
-
-	return true;
-}
-
-/*
-===============
-R_Init
-===============
-*/
-qboolean R_Init(void* hinstance, void* hWnd) {
-
-
-	RD.InitDevice((HWND)hWnd);
-
-	return True;
-}
-
-/*
-===============
-R_Shutdown
-===============
-*/
-void R_Shutdown(void) {
-
-}
 
 // ==================================================================================================================================
 /*
@@ -230,17 +198,11 @@ void R_BeginFrame(float camera_separation) {
 ** function and instead do a call to GLimp_SwapBuffers.
 */
 void GLimp_EndFrame(void) {
-	RD.Clear(200, 200, 200);
+	RD.Clear(0, 200, 200);
 	RD.Present();
 	return;
 }
 
-/*
-** GLimp_AppActivate
-*/
-void GLimp_AppActivate(qboolean active) {
-	return;
-}
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
