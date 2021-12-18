@@ -17,102 +17,6 @@ void R_RenderFrame(refdef_t* fd) {
 	return;
 }
 
-/*
-=============
-Draw_GetPicSize
-=============
-*/
-void Draw_GetPicSize(int* w, int* h, char* pic) {
-	return;
-}
-
-/*
-=============
-Draw_Pic
-=============
-*/
-void Draw_Pic(int x, int y, char* pic) {
-	RD.DrawImg(1, x, y, 10, 10);
-	return;
-}
-
-/*
-=============
-Draw_StretchPic
-=============
-*/
-void Draw_StretchPic(int x, int y, int w, int h, char* pic) {
-	RD.DrawImg(1, x, y, w, h);
-	return;
-}
-
-/*
-================
-Draw_Char
-
-Draws one 8*8 graphics character with 0 being transparent.
-It can be clipped to the top of the screen to allow the console to be
-smoothly scrolled off.
-================
-*/
-void Draw_Char(int x, int y, int num) {
-	return;
-}
-
-/*
-=============
-Draw_TileClear
-
-This repeats a 64*64 tile graphic to fill the screen around a sized down
-refresh window.
-=============
-*/
-void Draw_TileClear(int x, int y, int w, int h, char* pic) {
-	return;
-}
-
-/*
-=============
-Draw_Fill
-
-Fills a box of pixels with a single color
-=============
-*/
-void Draw_Fill(int x, int y, int w, int h, int c) {
-	//RD.DrawImg(1, x, y, w, h);
-}
-
-/*
-================
-Draw_FadeScreen
-
-================
-*/
-void Draw_FadeScreen(void) {
-	return;
-}
-
-/*
-=============
-Draw_StretchRaw
-=============
-*/
-extern unsigned	r_rawpalette[256];
-
-void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data) {
-	return;
-}
-
-/*
-=============
-R_SetPalette
-=============
-*/
-unsigned r_rawpalette[256];
-
-void R_SetPalette(const unsigned char* palette) {
-	return;
-}
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -132,7 +36,7 @@ void R_BeginFrame(float camera_separation) {
 ** function and instead do a call to GLimp_SwapBuffers.
 */
 void GLimp_EndFrame(void) {
-	RD.Clear(0, 200, 200);
+	RD.Clear(0,0, 0);
 	RD.Present();
 	return;
 }

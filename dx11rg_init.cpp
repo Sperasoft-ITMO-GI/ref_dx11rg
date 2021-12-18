@@ -62,6 +62,8 @@ qboolean R_Init(void* hinstance, void* winProc) {
 	Texture text = Texture(10, 10);
 	RD.RegisterTexture(1, text);
 
+	RM.InitImages();
+	RM.InitLocal();
 
 	return True;
 };

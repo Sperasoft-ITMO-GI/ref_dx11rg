@@ -67,6 +67,9 @@
     <ClCompile Include="RegistrationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dx11rg_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\baseq2\PixelShader2D.hlsl">

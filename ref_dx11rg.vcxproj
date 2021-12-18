@@ -35,6 +35,7 @@
     <ClCompile Include="..\ctf\q_shared.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="dx11rd_rmain.cpp" />
+    <ClCompile Include="dx11rg_draw.cpp" />
     <ClCompile Include="dx11rg_init.cpp" />
     <ClCompile Include="dx11rg_reg.cpp" />
     <ClCompile Include="RegistrationManager.cpp" />
@@ -130,6 +131,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsCpp</CompileAs>
       <AdditionalIncludeDirectories>P:\Quake-2\ref_dx11rg\DX11RenderEngine\dxerr;P:\Quake-2\ref_dx11rg\DX11RenderEngine\DX11RenderEngine\Utils\include;P:\Quake-2\ref_dx11rg\DX11RenderEngine\DX11RenderEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

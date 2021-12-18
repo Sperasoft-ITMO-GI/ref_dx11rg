@@ -1,6 +1,7 @@
 #include "dx11rg_local.h"
 #include "RegistrationManager.h"
 
+RegistrationManager RM;
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -10,6 +11,7 @@ Specifies the model that will be used as the world
 @@@@@@@@@@@@@@@@@@@@@
 */
 void R_BeginRegistration(char* model) {
+	RM.BeginRegistration(model);
 	return;
 }
 
@@ -38,8 +40,16 @@ Draw_FindPic
 =============
 */
 image_t* R_RegisterPic(char* name) {
+	image_t* gl = nullptr;
+	char	fullname[MAX_QPATH];
 
-	return NULL;
+	if (name[0] != '/' && name[0] != '\\') {
+		Com_sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
+		gl = RM.FindImage(fullname, it_pic);
+	} else
+		gl = RM.FindImage(name + 1, it_pic);
+
+	return gl;
 }
 
 /*
@@ -60,5 +70,12 @@ R_EndRegistration
 @@@@@@@@@@@@@@@@@@@@@
 */
 void R_EndRegistration(void) {
+	RM.EndRegistration();
+	return;
+}
+
+
+void R_SetPalette(const unsigned char* palette) {
+	RM.SetPalette(palette);
 	return;
 }
