@@ -41,8 +41,8 @@ class RegistrationManager {
 	byte* d_16to8table;
 
 
-	Texture GL_Upload32(uint32_t* data, int width, int height, bool mipmap);
-	Texture GL_Upload8(byte* data, int width, int height, bool mipmap, bool is_sky);
+	TextureData GL_Upload32(uint32_t* data, int width, int height, bool mipmap);
+	TextureData GL_Upload8(byte* data, int width, int height, bool mipmap, bool is_sky);
 	image_t* LoadPic(char* name, byte* pic, int width, int height, imagetype_t type, int bits);
 
 public:

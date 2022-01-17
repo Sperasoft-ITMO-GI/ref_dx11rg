@@ -49,7 +49,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\baseq2\PixelShader2D.hlsl">
+    <FxCompile Include="..\baseq2\Shader2D.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\baseq2\VertexShader2D.hlsl">

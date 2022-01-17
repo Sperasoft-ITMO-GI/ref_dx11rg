@@ -23,7 +23,7 @@ void Draw_Char(int x, int y, int num) {
 	fcol = col * 0.0625;
 	size = 0.0625;
 
-	RD.DrawImg(RM.draw_chars->texnum, col*8, row*8, 8, 8, x, y, 8, 8);
+	RD.DrawImg(RM.draw_chars->texnum, col*8, row*8, 8, 8, x, y, 8, 8, 0);
 
 	//Vertex_PosTexCol_Info info = {};
 	//info.pos.x = x;
@@ -108,7 +108,7 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic) {
 	//info.col.w = 1.0;
 
 	//dx11App.DummyDrawingPicture(&info, gl->texnum);
-	RD.DrawImg(gl->texnum, x, y, gl->width, gl->height);
+	RD.DrawImg(gl->texnum, x, y, gl->width, gl->height, 0);
 }
 
 
@@ -145,7 +145,7 @@ void Draw_Pic(int x, int y, char* pic) {
 	//info.col.w = 1.0;
 	//
 	//dx11App.DummyDrawingPicture(&info, gl->texnum);
-	RD.DrawImg(gl->texnum, x, y, gl->width, gl->height);
+	RD.DrawImg(gl->texnum, x, y, gl->width, gl->height, 0);
 }
 
 /*
@@ -164,7 +164,7 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic) {
 		ri.Con_Printf(PRINT_ALL, "Can't find pic: %s\n", pic);
 		return;
 	}
-	RD.DrawImg(image->texnum, x, y, w, h);
+	RD.DrawImg(image->texnum, x, y, w, h, 0);
 
 	// TODO: check for alpha test if image->hax_alpha then enable it
 
@@ -292,18 +292,18 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 		}
 	}
 
-	Texture tex = Texture(256, 256);
+	TextureData tex = TextureData(256, 256);
 	for (size_t h = 0; h < 256; h++) {
 		for (size_t w = 0; w < 256; w++) {
-			auto c = Texture::Color(image32[h * 256 + w]);
+			auto c = TextureData::Color(image32[h * 256 + w]);
 			uint8_t b = c.GetR();
 			c.SetR(c.GetB());
 			c.SetB(b);
-			tex.PutPixel(w, h, c);
+			tex.PutPixel(w, h, image32[h * 256 + w]);
 		}
 	}
 	RD.RegisterTexture(1300, tex);
-	RD.DrawImg(1300, x, y, windowState.width, windowState.height);
+	RD.DrawImg(1300, x, y, windowState.width, windowState.height, 0);
 
 	//dx11App.DummyTest("pics/test.pcx", 256, 256, 32, (unsigned char*)image32, 1);
 
