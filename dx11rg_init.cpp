@@ -43,17 +43,17 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 	RD.InitDevice(windowState.hWnd, windowState.width, windowState.height);
 	
-	//{
-	//	RenderDevice::ShaderData shD;
-	//	shD.type = RenderDevice::ShaderType::PixelShader2D;
-	//	shD.dataSize = ri.FS_LoadFile("PixelShader2D.hlsl", (void**)&shD.data);
-	//
-	//	RD.ReloadShader(shD);
-	//	ri.FS_FreeFile(shD.data);
-	//}
 	{
 		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::VertexShader2D;
+		shD.type = RenderDevice::ShaderType::Shader3D;
+		shD.dataSize = ri.FS_LoadFile("Shader3D.hlsl", (void**)&shD.data);
+	
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::Shader2D;
 		shD.dataSize = ri.FS_LoadFile("Shader2D.hlsl", (void**)&shD.data);
 
 		RD.ReloadShader(shD);

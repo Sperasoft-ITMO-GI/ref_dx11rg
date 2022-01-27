@@ -6,6 +6,14 @@
 
 WinState windowState;
 
+LRESULT CALLBACK ProcessMessagesDebug(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	if (RD.ProcessMessages(hWnd, msg, wParam, lParam)) {
+		return true;
+	}
+	return windowState.wndproc(hWnd, msg, wParam, lParam);
+}
+
+
 void InitWindowClass(WNDPROC winProc, HINSTANCE hInstance) {
 	windowState.hInstance = hInstance;
 	windowState.wndproc = winProc;
@@ -13,7 +21,7 @@ void InitWindowClass(WNDPROC winProc, HINSTANCE hInstance) {
 
 	/* Register the frame class */
 	wc.style = 0;
-	wc.lpfnWndProc = windowState.wndproc;
+	wc.lpfnWndProc = &ProcessMessagesDebug;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = windowState.hInstance;

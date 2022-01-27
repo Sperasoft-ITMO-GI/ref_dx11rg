@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include "Texture.h"
+#include "TextureData.h"
 
 class RegistrationManager;
 extern RegistrationManager RM;
