@@ -47,6 +47,12 @@
     <ClInclude Include="RegistrationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="anorms.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="anormtab.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ctf\q_shared.c">

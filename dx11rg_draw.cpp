@@ -23,7 +23,7 @@ void Draw_Char(int x, int y, int num) {
 	fcol = col * 0.0625;
 	size = 0.0625;
 
-	RD.DrawImg(RM.draw_chars->texnum, col*8, row*8, 8, 8, x, y, 8, 8, 1);
+	RD.DrawImg(RM.draw_chars->texnum, col*8, row*8, 8, 8, x, y, 8, 8, 0);
 
 	//Vertex_PosTexCol_Info info = {};
 	//info.pos.x = x;

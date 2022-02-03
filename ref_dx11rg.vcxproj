@@ -25,6 +25,8 @@
   <ItemGroup>
     <ClInclude Include="..\client\ref.h" />
     <ClInclude Include="..\ctf\q_shared.h" />
+    <ClInclude Include="anorms.h" />
+    <ClInclude Include="anormtab.h" />
     <ClInclude Include="DX11RenderEngine\DX11RenderEngine\pch.h" />
     <ClInclude Include="dx11rg_common.h" />
     <ClInclude Include="dx11rg_local.h" />

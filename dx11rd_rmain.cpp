@@ -14,6 +14,52 @@ R_RenderFrame
 @@@@@@@@@@@@@@@@@@@@@
 */
 void R_RenderFrame(refdef_t* fd) {
+
+	//if (r_norefresh->value)
+	//	return;
+
+	//r_newrefdef = *fd;
+
+	//if (!r_worldmodel && !(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
+	//	ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel");
+	//
+	//if (r_speeds->value) {
+	//	c_brush_polys = 0;
+	//	c_alias_polys = 0;
+	//}
+	//
+	//R_PushDlights();
+	//
+	//if (gl_finish->value)
+	//	qglFinish();
+
+	//R_SetupFrame();
+	//
+	//R_SetFrustum();
+	//
+	//R_SetupGL();
+	//
+	//R_MarkLeaves();	// done here so we know if we're in water
+	//
+	//R_DrawWorld();
+	
+	//R_DrawEntitiesOnList();
+	//
+	//R_RenderDlights();
+	//
+	//R_DrawParticles();
+	//
+	//R_DrawAlphaSurfaces();
+	//
+	//R_Flash();
+	//
+	//if (r_speeds->value) {
+	//	ri.Con_Printf(PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
+	//		c_brush_polys,
+	//		c_alias_polys,
+	//		c_visible_textures,
+	//		c_visible_lightmaps);
+	//}
 	return;
 }
 
@@ -24,6 +70,7 @@ R_BeginFrame
 @@@@@@@@@@@@@@@@@@@@@
 */
 void R_BeginFrame(float camera_separation) {
+	RD.BeginFrame();
 
 	return;
 }
@@ -37,7 +84,9 @@ void R_BeginFrame(float camera_separation) {
 */
 void GLimp_EndFrame(void) {
 	RD.Clear(0,0, 0);
+	
 	RD.Present();
+
 	return;
 }
 

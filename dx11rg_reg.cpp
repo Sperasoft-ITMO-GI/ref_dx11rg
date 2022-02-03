@@ -22,7 +22,35 @@ R_RegisterModel
 @@@@@@@@@@@@@@@@@@@@@
 */
 struct model_s* R_RegisterModel(char* name) {
-	return NULL;
+	model_t* mod;
+	int		i;
+	//dsprite_t* sprout;
+	dmdl_t* pheader;
+
+	mod = RM.FindModel(name, False);
+	if (mod) {
+		mod->registration_sequence = RM.registration_sequence;
+
+		// register any images used by the models
+		if (mod->type == mod_sprite) {
+			auto sprout = mod->realModel;
+			for (i = 0; i < sprout->num_frames; i++)
+				sprout->frameSkins[i].m_texid = RM.FindImage(sprout->frameSkins[i].name, it_sprite);
+		}
+		else if (mod->type == mod_alias) {
+			auto sprout = mod->realModel;
+			for (i = 0; i < sprout->num_frames; i++)
+				sprout->frameSkins[i].m_texid = RM.FindImage(sprout->frameSkins[i].name, it_skin);
+			//PGM
+			//mod->numframes = pheader->num_frames;
+			//PGM
+		}
+		//else if (mod->type == mod_brush) {
+		//	for (i = 0; i < mod->numtexinfo; i++)
+		//		mod->texinfo[i].image->registration_sequence = RM.registration_sequence;
+		//}
+	}
+	return mod;
 }
 
 /*
