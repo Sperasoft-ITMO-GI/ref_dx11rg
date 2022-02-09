@@ -11,8 +11,10 @@
 #include "../client/ref.h"
 #include "../win32/winquake.h"
 
+
 #include "RenderEngine.h"
 #include "Window.h"
+#include "RegistrationManager.h"
 
 extern RenderDevice RD;
 //#include "dx11_init.h"
@@ -39,7 +41,6 @@ extern RenderDevice RD;
 */
 
 
-#include "RegistrationManager.h"
 
 qboolean 	R_Init(void* hinstance, void* hWnd);
 void		R_Shutdown(void);

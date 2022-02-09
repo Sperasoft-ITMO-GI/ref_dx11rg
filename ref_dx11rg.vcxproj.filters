@@ -53,6 +53,9 @@
     <ClInclude Include="anormtab.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="dx11rg_drawData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ctf\q_shared.c">
@@ -76,7 +79,13 @@
     <ClCompile Include="RegistrationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dx11rg_draw.cpp">
+    <ClCompile Include="dx11rg_drawUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11rg_drawMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11rg_drawAliace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

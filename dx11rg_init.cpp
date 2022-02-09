@@ -38,6 +38,14 @@ qboolean R_Init(void* hinstance, void* winProc) {
 	int y = vid_ypos->value;
 
 	ri.Vid_GetModeInfo(&width, &height, mode);
+	/*
+	D3D11 ERROR: ID3D11DeviceContext::OMSetRenderTargets: 
+	The RenderTargetView at slot 0 is not compatible with the DepthStencilView. 
+	DepthStencilViews may only be used with RenderTargetViews if the effective dimensions of the Views are equal, as well as the Resource types, multisample count, and multisample quality. 
+	The RenderTargetView at slot 0 has (w:1024,h:676,as:1), while the Resource is a Texture2D with (mc:1,mq:0). 
+	The DepthStencilView has           (w:1024,h:576,as:1), while the Resource is a Texture2D with (mc:1,mq:0).  
+	[ STATE_SETTING ERROR #388: OMSETRENDERTARGETS_INVALIDVIEW]
+	*/
 
 	InitWindow(L"Quake 2", width, height, x, y, fullscreen);
 

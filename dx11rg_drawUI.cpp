@@ -302,7 +302,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 			tex.PutPixel(w, h, image32[h * 256 + w]);
 		}
 	}
-	RD.RegisterTexture(1300, tex);
+	RD.UpdateTexture(1300, tex);
 	RD.DrawImg(1300, x, y, windowState.width, windowState.height, 0);
 
 	//dx11App.DummyTest("pics/test.pcx", 256, 256, 32, (unsigned char*)image32, 1);

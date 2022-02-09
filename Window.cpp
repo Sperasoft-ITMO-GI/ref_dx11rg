@@ -50,7 +50,7 @@ void ReleaseWindowClass() {
 bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool fullscreen) {
 	RECT			r;
 	cvar_t* vid_xpos, * vid_ypos;
-	int				stylebits;
+	int				stylebits = WS_CAPTION | WS_MINIMIZEBOX;//| WS_SYSMENU;
 	int				x, y, w, h;
 	int				exstyle;
 
@@ -65,12 +65,13 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 	r.left = left;
 	r.top = top;
 	r.right = left + width;
-	r.bottom = left + height;
+	r.bottom = top + height;
 
 	AdjustWindowRect(&r, stylebits, FALSE);
 
 	w = r.right - r.left;
 	h = r.bottom - r.top;
+
 
 	if (fullscreen) {
 		x = 0;
@@ -80,7 +81,7 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 		y = top;
 	}
 
-
+	//w:1024,h:676, (w:1040,h:715,
 
 	try {
 		windowState.hWnd = CreateWindowEx(
@@ -98,11 +99,15 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 
 	}
 
+	RECT realRect;
+	GetWindowRect(windowState.hWnd, &realRect);
+
+
 	windowState.fullscreen = fullscreen;
-	windowState.width = w;
-	windowState.height = h;
-	windowState.top = x;
-	windowState.left = y;
+	windowState.width = realRect.right - realRect.left;
+	windowState.height = realRect.bottom - realRect.top;
+	windowState.top = realRect.top;
+	windowState.left = realRect.left;
 
 	if (!windowState.hWnd)
 		ri.Sys_Error(ERR_FATAL, "Couldn't create window");

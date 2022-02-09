@@ -29,6 +29,7 @@
     <ClInclude Include="anormtab.h" />
     <ClInclude Include="DX11RenderEngine\DX11RenderEngine\pch.h" />
     <ClInclude Include="dx11rg_common.h" />
+    <ClInclude Include="dx11rg_drawData.h" />
     <ClInclude Include="dx11rg_local.h" />
     <ClInclude Include="RegistrationManager.h" />
     <ClInclude Include="Window.h" />
@@ -37,7 +38,9 @@
     <ClCompile Include="..\ctf\q_shared.c" />
     <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="dx11rd_rmain.cpp" />
-    <ClCompile Include="dx11rg_draw.cpp" />
+    <ClCompile Include="dx11rg_drawAliace.cpp" />
+    <ClCompile Include="dx11rg_drawUI.cpp" />
+    <ClCompile Include="dx11rg_drawMain.cpp" />
     <ClCompile Include="dx11rg_init.cpp" />
     <ClCompile Include="dx11rg_reg.cpp" />
     <ClCompile Include="RegistrationManager.cpp" />
@@ -56,6 +59,8 @@
     </FxCompile>
     <FxCompile Include="..\baseq2\Shader3D.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">psIn</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="..\baseq2\VertexShader2D.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

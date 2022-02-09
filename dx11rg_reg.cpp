@@ -33,14 +33,14 @@ struct model_s* R_RegisterModel(char* name) {
 
 		// register any images used by the models
 		if (mod->type == mod_sprite) {
-			auto sprout = mod->realModel;
+			auto sprout = mod;
 			for (i = 0; i < sprout->num_frames; i++)
-				sprout->frameSkins[i].m_texid = RM.FindImage(sprout->frameSkins[i].name, it_sprite);
+				sprout->skins[i].m_texid = RM.FindImage(sprout->skins[i].name, it_sprite);
 		}
 		else if (mod->type == mod_alias) {
-			auto sprout = mod->realModel;
-			for (i = 0; i < sprout->num_frames; i++)
-				sprout->frameSkins[i].m_texid = RM.FindImage(sprout->frameSkins[i].name, it_skin);
+			auto sprout = mod;
+			for (i = 0; i < sprout->num_skins; i++)
+				sprout->skins[i].m_texid = RM.FindImage(sprout->skins[i].name, it_skin);
 			//PGM
 			//mod->numframes = pheader->num_frames;
 			//PGM
