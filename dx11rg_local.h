@@ -40,7 +40,7 @@ extern RenderDevice RD;
 
 */
 
-
+void ReloadShaders();
 
 qboolean 	R_Init(void* hinstance, void* hWnd);
 void		R_Shutdown(void);

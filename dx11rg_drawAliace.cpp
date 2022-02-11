@@ -19,7 +19,10 @@ void R_RotateForEntity(entity_t* e) {
 	matrix RotZMat = matrix::CreateRotationZ(DegToRad(e->angles[1]));
 	matrix RotYMat = matrix::CreateRotationY(DegToRad(-e->angles[0]));
 	matrix RotXMat = matrix::CreateRotationX(DegToRad(-e->angles[2]));
-	matrix TranMat = matrix::CreateTranslation(e->origin[0], e->origin[1], e->origin[2]);
+	matrix TranMat = matrix::CreateTranslation(
+		e->origin[0] *(1- currententity->backlerp)+ currententity->backlerp* e->oldorigin[0],
+		e->origin[1] *(1- currententity->backlerp)+ currententity->backlerp* e->oldorigin[1],
+		e->origin[2] *(1- currententity->backlerp)+ currententity->backlerp* e->oldorigin[2]);
 
 	LastEntityWorldMatrix = TranMat;
 	LastEntityWorldMatrix = XMMatrixMultiply(RotZMat, LastEntityWorldMatrix);

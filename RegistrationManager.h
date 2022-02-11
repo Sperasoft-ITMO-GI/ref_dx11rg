@@ -91,7 +91,6 @@ class RegistrationManager {
 	std::array<model_t*, MAX_MOD_KNOWN> dxModels;
 
 	uint32_t gammatable[256];;
-	uint32_t d_8to24table[256];
 	byte* d_16to8table;
 
 
@@ -129,6 +128,7 @@ public:
 
 	image_t* draw_chars;
 	uint32_t rawPalette[256];
+	uint32_t d_8to24table[256];
 
 
 	~RegistrationManager();

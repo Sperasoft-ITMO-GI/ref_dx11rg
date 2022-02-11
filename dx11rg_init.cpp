@@ -7,6 +7,8 @@ cvar_t* dx11rg_mode;
 
 RenderDevice RD;
 
+const char* compileHLSLComand = "Recompile";
+
 void GLimp_AppActivate(qboolean active) {
 	if (active) {
 		SetForegroundWindow(windowState.hWnd);
@@ -67,18 +69,41 @@ qboolean R_Init(void* hinstance, void* winProc) {
 		RD.ReloadShader(shD);
 		ri.FS_FreeFile(shD.data);
 	}
+
 	TextureData text = TextureData(10, 10);
 	RD.RegisterTexture(1, text);
 
 	RM.InitImages();
 	RM.InitLocal();
 
+	ri.Cmd_AddCommand("Recompile", ReloadShaders);
+
 	return True;
 };
 
+void ReloadShaders() {
+	printf("Recomile\n");
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::Shader3D;
+		shD.dataSize = ri.FS_LoadFile("Shader3D.hlsl", (void**)&shD.data);
+	
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::Shader2D;
+		shD.dataSize = ri.FS_LoadFile("Shader2D.hlsl", (void**)&shD.data);
 
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
+}
 
 void R_Shutdown(void) {
+
+	ri.Cmd_RemoveCommand("Recompile");
 	RD.DestroyDevice();
 	ReleaseWindow();
 	ReleaseWindowClass();
