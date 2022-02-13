@@ -65,7 +65,7 @@ typedef enum { mod_bad, mod_brush, mod_sprite, mod_alias } modtype_t;
 
 typedef struct model_s {
 	skinInfo* skins;
-	FramedModelData realModel;
+	//FramedModelData realModel;
 
 	int modelId;
 	int num_frames;
@@ -98,9 +98,8 @@ class RegistrationManager {
 	TextureData GL_Upload8(byte* data, int width, int height, bool mipmap, bool is_sky);
 	image_t* LoadPic(char* name, byte* pic, int width, int height, imagetype_t type, int bits);
 
-	void LoadAliasModel(model_t* mod, void* buffer);
-
-	FramedModelData ConvertAliasModel(model_t* model);
+	FramedModelData  LoadAliasModel(model_t* mod, void* buffer);
+	
 
 public:
 	RegistrationManager();

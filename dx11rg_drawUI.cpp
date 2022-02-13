@@ -107,8 +107,8 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill(int x, int y, int w, int h, int c) {
 
-	//auto c = TextureData::Color(RM.d_8to24table[c]);
-	//RD.DrawImg(image->texnum, x, y, w, h, 0);
+	TextureData::Color cb = TextureData::Color(RM.d_8to24table[c]);
+	RD.DrawColor(cb.ToFloat4(), x, y, w, h, 0);
 
 	//TODO
 }
@@ -123,7 +123,7 @@ void Draw_FadeScreen(void) {
 
 	//
 	//auto c = { 0.0f, 0.0f, 0.0f, 0.8f };
-
+	RD.DrawColor({ 0.0f, 0.0f, 0.0f, 0.8f }, 0, 0, windowState.width, windowState.height, 0);
 	//TODO
 }
 
@@ -134,8 +134,8 @@ Draw_StretchRaw
 */
 
 void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data) {
-	unsigned	image32[256 * 256];
-	unsigned char image8[256 * 256];
+	static unsigned	image32[256 * 256];
+	static unsigned char image8[256 * 256];
 	int			i, j, trows;
 	byte* source;
 	int			frac, fracstep;
@@ -168,7 +168,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 		}
 	}
 
-	TextureData tex = TextureData(256, 256);
+	static TextureData tex = TextureData(256, 256);
 	for (size_t h = 0; h < 256; h++) {
 		for (size_t w = 0; w < 256; w++) {
 			auto c = TextureData::Color(image32[h * 256 + w]);

@@ -299,8 +299,7 @@ model_t* RegistrationManager::FindModel(const char* name, qboolean crash) {
 
 	switch (LittleLong(*(unsigned*)buf)) {
 	case IDALIASHEADER:
-		RM.LoadAliasModel(loadmodel, buf);
-		RD.RegisterFramedModel(i, loadmodel->realModel);
+		RD.RegisterFramedModel(i, RM.LoadAliasModel(loadmodel, buf));
 		loadmodel->modelId = i;
 		mod->type = mod_alias;
 		break;
@@ -327,7 +326,9 @@ model_t* RegistrationManager::FindModel(const char* name, qboolean crash) {
 	return mod;
 }
 
-void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
+FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
+
+	FramedModelData result;
 
 	// check for the ident and the version number
 
@@ -339,7 +340,7 @@ void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 		printf(mod->name);
 		printf("\n");
 		printf("Bad model");
-		return;
+		return result;
 	}
 
 	/////////////////////////////////////////////
@@ -351,7 +352,7 @@ void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 	mod->num_frames = header->num_frames;
 
 	// allocate memory
-	static dstvert_t uvCoordinates [1000];
+	dstvert_t* uvCoordinates = new dstvert_t [header->num_st]; /////////////////////////////////
 	dstvert_t* pinst = (dstvert_t*)((byte*)file + header->ofs_st);
 
 	for (int i = 0; i < header->num_st; i++) {
@@ -364,7 +365,7 @@ void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 	// load triangle lists
 	//
 	dtriangle_t* pintri = (dtriangle_t*)((byte*)file + header->ofs_tris);
-	static dtriangle_t triangles[1000];
+	dtriangle_t* triangles = new dtriangle_t[header->num_tris]; //////////////////////////////
 	mod->num_tris = header->num_tris;
 
 	for (int i = 0; i < header->num_tris; i++) {
@@ -387,8 +388,8 @@ void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 
 	// vertex array initialization
 
-	static vec3_t m_vertices [100000];
-	static int m_lightnormals [100000];
+	vec3_t* m_vertices = new vec3_t [num_xyz* num_frames];
+	int* m_lightnormals  = new int[num_xyz * num_frames];
 	char* buffer = (char*)file + header->ofs_frames;
 	for (int frameIndex = 0; frameIndex < num_frames; frameIndex++) {
 		// ajust pointers
@@ -406,8 +407,8 @@ void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 
 
 	int index = 0;
-	mod->realModel.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
-	mod->realModel.frames.resize(num_frames);
+	result.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.frames.resize(num_frames);
 	//mod->realModel.frames.shrink_to_fit();;
 	//for (int frameIndex = 0; frameIndex < num_frames; frameIndex++) {
 	//	dx11Model.frames[frameIndex].resize(num_xyz);
@@ -417,7 +418,7 @@ void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 	//	}
 	//}
 
-	mod->realModel.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 	//dx11Model.indexes.resize(header.num_tris * 3);
 	//dx11Model.verticies.resize(header.num_tris * 3);
 	//dx11Model.primitiveCount = header.num_tris;
@@ -457,15 +458,17 @@ void RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 		//uvNormals[2]->s = pstverts[ptri->index_st[2]].s << 16;
 		//uvNormals[2]->t = pstverts[ptri->index_st[2]].t << 16;
 
-		mod->realModel.AddTriangle(verticies3, uvNormals);
+		result.AddTriangle(verticies3, uvNormals);
 	}
 
 
 	// free buffer's memory
-	//delete[] m_vertices;
-	//delete[] m_lightnormals;
-	//delete[] uvCoordinates;
+	delete[] m_vertices;
+	delete[] m_lightnormals;
+	delete[] uvCoordinates;
+	delete[] triangles;
 
+	return result;
 }
 
 

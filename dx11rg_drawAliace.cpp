@@ -296,10 +296,10 @@ void R_DrawAliasModel(entity_t* e) {
 
 	if (currentmodel->num_frames == 1)
 		RD.DrawFramedModel(currentmodel->modelId, skin->texnum, position,
-			currententity->oldframe, currententity->frame, currententity->backlerp, BAD_UV | LERP | SINGLE_FRAME);
+			currententity->oldframe, currententity->frame, currententity->backlerp, MBAD_UV | MLERP | MSINGLE_FRAME);
 	else
 		RD.DrawFramedModel(currentmodel->modelId, skin->texnum, position,
-			currententity->oldframe, currententity->frame, currententity->backlerp, BAD_UV | LERP);
+			currententity->oldframe, currententity->frame, currententity->backlerp, MBAD_UV | MLERP);
 	//GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp);
 
 	/*GL_TexEnv(GL_REPLACE);
