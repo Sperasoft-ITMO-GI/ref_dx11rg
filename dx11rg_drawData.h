@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dx11rg_local.h"
+#include "dx11rg_model.h"
 #include "dx11rg_common.h"
 
 struct ViewData {
@@ -49,6 +50,14 @@ extern vec3_t	r_origin;
 
 extern float	r_world_matrix[16];
 extern float	r_base_world_matrix[16];
+extern matrix LastEntityWorldMatrix;
+
+extern float colorBuf[4];
+extern int  lightmap_textures;
+extern float inverse_intensity;
+
+
+#define BACKFACE_EPSILON	0.01
 
 //
 // screen size info
@@ -86,11 +95,14 @@ extern cvar_t* vid_ref;
 extern cvar_t* gl_round_down;
 
 
+#define	TEXNUM_LIGHTMAPS	1024
 const float Pi = 3.14159265359f;
 
 inline float DegToRad(float deg) {
 	return deg / 180.0f * Pi;
 }
+
+void R_RotateForEntity(entity_t* e);
 
 
 
@@ -106,3 +118,29 @@ void R_SetupDX(void);
 void R_DrawEntitiesOnList(void);
 /* Models drawing */
 void R_DrawAliasModel(entity_t* e);
+
+
+
+
+
+void EmitWaterPolys(msurface_t* fa);
+void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
+void R_DrawBrushModel(entity_t* e);
+void R_ClearSkyBox(void);
+void R_DrawWorld(void);
+void R_MarkLeaves();
+void R_DrawEntitiesOnList();
+void R_RenderDlights();
+void R_DrawParticles();
+void R_DrawAlphaSurfaces();
+void R_Flash();
+
+
+
+
+
+void GL_BuildPolygonFromSurface(msurface_t* fa);
+void GL_CreateSurfaceLightmap(msurface_t* surf);
+void GL_EndBuildingLightmaps(void);
+void GL_BeginBuildingLightmaps(model_t* m);
+void GL_SubdivideSurface(msurface_t* fa);

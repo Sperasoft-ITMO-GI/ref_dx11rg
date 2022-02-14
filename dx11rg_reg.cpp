@@ -81,17 +81,6 @@ image_t* R_RegisterPic(char* name) {
 }
 
 /*
-============
-R_SetSky
-============
-*/
-// 3dstudio environment map names
-char* suf[6] = { (char*)"rt", (char*)"bk", (char*)"lf", (char*)"ft", (char*)"up", (char*)"dn" };
-void R_SetSky(char* name, float rotate, vec3_t axis) {
-	return;
-}
-
-/*
 @@@@@@@@@@@@@@@@@@@@@
 R_EndRegistration
 

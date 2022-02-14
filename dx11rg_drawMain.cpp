@@ -54,8 +54,7 @@ cvar_t* r_lefthand;
 
 cvar_t* r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
-cvar_t* gl_skymip;
-cvar_t* gl_picmip;
+
 
 
 cvar_t* dx11_mode;
@@ -106,17 +105,17 @@ void R_RenderFrame(refdef_t* fd) {
 	//
 	R_SetupDX();
 	//
-	//R_MarkLeaves();	// done here so we know if we're in water
+	R_MarkLeaves();	// done here so we know if we're in water
 	//
-	//R_DrawWorld();
+	R_DrawWorld();
 
 	R_DrawEntitiesOnList();
 	//
-	//R_RenderDlights();
+	R_RenderDlights();
 	//
 	//R_DrawParticles();
 	//
-	//R_DrawAlphaSurfaces();
+	R_DrawAlphaSurfaces();
 	//
 	//R_Flash();
 	//
@@ -198,27 +197,6 @@ void R_SetupFrame(void) {
 
 
 
-
-
-/*
-=============
-R_PushDlights
-=============
-*/
-void R_PushDlights(void) {
-	//int		i;
-	//dlight_t* l;
-	//
-	///*if (gl_flashblend->value)
-	//	return;*/
-	//
-	//r_dlightframecount = r_framecount + 1;	// because the count hasn't
-	//										//  advanced yet for this frame
-	//l = r_newrefdef.dlights;
-	//for (i = 0; i < r_newrefdef.num_dlights; i++, l++)
-	//	R_MarkLights(l, 1 << i, r_worldmodel->nodes);
-}
-
 ViewData currentView;
 
 void UpdateViewData() {
@@ -276,63 +254,10 @@ void R_SetupDX(void) {
 	UpdateViewData();
 
 	RD.SetPerspectiveMatrix(currentView.ProjectionMatrix.Transpose());
-	RD.SetViewMatrix(currentView.ViewMatrix.Transpose()	);
-	// Тут каждый раз устанавливается новый вьюпорт
-	// Не ясно, нужно ли это делать
-
-	//
-	// set up viewport
-	//
-	//x = floor(r_newrefdef.x * windowState.width / windowState.width);
-	//x2 = ceil((r_newrefdef.x + r_newrefdef.width) * windowState.width / windowState.width);
-	//y = floor(windowState.height - r_newrefdef.y * windowState.height / windowState.height);
-	//y2 = ceil(windowState.height - (r_newrefdef.y + r_newrefdef.height) * windowState.height / windowState.height);
-	//
-	//w = x2 - x;
-	//h = y - y2;
-
-	//qglViewport(x, y2, w, h);
-
-	////
-	//// set up projection matrix
-	////
-
-	//screenaspect = (float)r_newrefdef.width / r_newrefdef.height;
-
-	//qglMatrixMode(GL_PROJECTION);
-	//qglLoadIdentity();
-	//MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
-
-	//qglCullFace(GL_FRONT);
-
-	// Тут считаем матрицу моделвью
-
-	//qglMatrixMode(GL_MODELVIEW);
-	//qglLoadIdentity();
-
-	// id's system:
-	//	- X axis = Left/Right
-	//	- Y axis = Forward/Backward
-	//	- Z axis = Up/Down
-	//
-	// DirectX coordinate system:
-	//	- X axis = Left/Right
-	//	- Y axis = Up/Down
-	//	- Z axis = Forward/Backward
-
-	// vieworg - postition
-	// viewangles - point view
-
+	//RD.SetViewMatrix(currentView.ViewMatrix.Transpose()	);
+	
 	using namespace DirectX;
-	XMMATRIX model_view = XMMatrixIdentity();
-	/*model_view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
-	model_view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
-
-	model_view *= XMMatrixRotationX(XMConvertToRadians(-r_newrefdef.viewangles[2]));
-	model_view *= XMMatrixRotationY(XMConvertToRadians(-r_newrefdef.viewangles[0]));
-	model_view *= XMMatrixRotationZ(XMConvertToRadians(-r_newrefdef.viewangles[1]));
-
-	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);*/
+	matrix model_view = XMMatrixIdentity();
 
 
 	model_view *= XMMatrixTranslation(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
@@ -344,40 +269,9 @@ void R_SetupDX(void) {
 	model_view *= XMMatrixRotationZ(XMConvertToRadians(90.0f));
 	model_view *= XMMatrixRotationX(XMConvertToRadians(-90.0f));
 
-	model_view = XMMatrixTranspose(model_view);
+	RD.SetViewMatrix(model_view.Transpose());
 
-	RD.SetViewMatrix(model_view);
-	//bsp_renderer->InitCB();
-
-	//qglRotatef(-90, 1, 0, 0);	    // put Z going up
-	//qglRotatef(90, 0, 0, 1);	    // put Z going up
-	//qglRotatef(-r_newrefdef.viewangles[2], 1, 0, 0);
-	//qglRotatef(-r_newrefdef.viewangles[0], 0, 1, 0);
-	//qglRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
-	//qglTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
-
-	// Записываем моделвью матрицу в ворлд матрицу
-	// Может быть нужно траспанировать
-
-	//for (int i = 0; i < 4; i++) {
-	//	for (int j = 0; j < 4; j++) {
-	//		r_world_matrix[(i * 4) + j] = model_view.m[i][j];
-	//	}
-	//}
-
-	//qglGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-
-	////
-	//// set drawing parms
-	////
-	//if (gl_cull->value)
-	//	qglEnable(GL_CULL_FACE);
-	//else
-	//	qglDisable(GL_CULL_FACE);
-
-	//qglDisable(GL_BLEND);
-	//qglDisable(GL_ALPHA_TEST);
-	//qglEnable(GL_DEPTH_TEST);
+	
 }
 
 
@@ -482,7 +376,7 @@ void R_DrawEntitiesOnList(void) {
 				R_DrawAliasModel(currententity);
 				break;
 			case mod_brush:
-				//R_DrawBrushModel(currententity);
+				R_DrawBrushModel(currententity);
 				break;
 			case mod_sprite:
 				//R_DrawSpriteModel(currententity);

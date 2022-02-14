@@ -31,6 +31,7 @@
     <ClInclude Include="dx11rg_common.h" />
     <ClInclude Include="dx11rg_drawData.h" />
     <ClInclude Include="dx11rg_local.h" />
+    <ClInclude Include="dx11rg_model.h" />
     <ClInclude Include="RegistrationManager.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -39,10 +40,13 @@
     <ClCompile Include="..\win32\q_shwin.c" />
     <ClCompile Include="dx11rd_rmain.cpp" />
     <ClCompile Include="dx11rg_drawAliace.cpp" />
+    <ClCompile Include="dx11rg_drawSurf.cpp" />
     <ClCompile Include="dx11rg_drawUI.cpp" />
     <ClCompile Include="dx11rg_drawMain.cpp" />
     <ClCompile Include="dx11rg_init.cpp" />
+    <ClCompile Include="dx11rg_light.cpp" />
     <ClCompile Include="dx11rg_reg.cpp" />
+    <ClCompile Include="dx11rg_warp.cpp" />
     <ClCompile Include="RegistrationManager.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -54,15 +58,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\baseq2\Shader2D.hlsl">
+    <FxCompile Include="..\baseq2\BSPShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\baseq2\Shader3D.hlsl">
+    <FxCompile Include="..\baseq2\ModelsShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">psIn</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="..\baseq2\VertexShader2D.hlsl">
+    <FxCompile Include="..\baseq2\UIShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>

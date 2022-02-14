@@ -20,7 +20,21 @@ extern RenderDevice RD;
 //#include "dx11_init.h"
 
 
-//#define	REF_VERSION	"DX11 0.01"
+extern cvar_t* gl_skymip;
+extern cvar_t* gl_picmip;
+
+extern cvar_t* r_norefresh;
+extern cvar_t* r_drawentities;
+extern cvar_t* r_speeds;
+extern cvar_t* r_drawworld;
+extern cvar_t* r_fullbright;
+extern cvar_t* r_novis;
+extern cvar_t* r_nocull;
+extern cvar_t* r_lerpmodels;
+extern cvar_t* r_lefthand;
+extern cvar_t* r_lightlevel;	// FIXME: This is a HACK to get the client's light level
+
+								//#define	REF_VERSION	"DX11 0.01"
 
 //unsigned	d_8to24table[256];
 
