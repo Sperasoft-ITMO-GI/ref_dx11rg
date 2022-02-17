@@ -102,7 +102,6 @@ inline float DegToRad(float deg) {
 	return deg / 180.0f * Pi;
 }
 
-void R_RotateForEntity(entity_t* e);
 
 
 
@@ -117,26 +116,24 @@ void R_SetupDX(void);
 
 void R_DrawEntitiesOnList(void);
 /* Models drawing */
-void R_DrawAliasModel(entity_t* e);
-
-
-
-
-
-void EmitWaterPolys(msurface_t* fa);
-void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
-void R_DrawBrushModel(entity_t* e);
-void R_ClearSkyBox(void);
-void R_DrawWorld(void);
-void R_MarkLeaves();
 void R_DrawEntitiesOnList();
+void R_DrawWorld(void);
+void R_DrawAliasModel(entity_t* e);
+matrix R_RotateForEntity(entity_t* e, bool lerped = true);
+void R_DrawBrushModel(entity_t* e);
+void EmitWaterPolys(msurface_t* fa);
+
+
+
+
+
+void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
+void R_ClearSkyBox(void);
+void R_MarkLeaves();
 void R_RenderDlights();
 void R_DrawParticles();
 void R_DrawAlphaSurfaces();
 void R_Flash();
-
-
-
 
 
 void GL_BuildPolygonFromSurface(msurface_t* fa);

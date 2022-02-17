@@ -341,7 +341,7 @@ void R_DrawEntitiesOnList(void) {
 				R_DrawAliasModel(currententity);
 				break;
 			case mod_brush:
-				//R_DrawBrushModel(currententity);
+				R_DrawBrushModel(currententity);
 				break;
 			case mod_sprite:
 				//R_DrawSpriteModel(currententity);
@@ -389,4 +389,32 @@ void R_DrawEntitiesOnList(void) {
 	}
 	//qglDepthMask(1);		// back to writing
 
+}
+
+
+matrix R_RotateForEntity(entity_t* e, bool lerped ) {
+	matrix result = matrix::CreateTranslation(0, 0, 0);
+	//	qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
+	//
+	//	qglRotatef(e->angles[1], 0, 0, 1);
+	//	qglRotatef(-e->angles[0], 0, 1, 0);
+	//	qglRotatef(-e->angles[2], 1, 0, 0);
+
+		// Q2 camera transform
+	matrix RotZMat = matrix::CreateRotationZ(DegToRad(e->angles[1]));
+	matrix RotYMat = matrix::CreateRotationY(DegToRad(-e->angles[0]));
+	matrix RotXMat = matrix::CreateRotationX(DegToRad(-e->angles[2]));
+	matrix TranMat;
+	if (lerped) {
+		TranMat = matrix::CreateTranslation(
+			e->origin[0] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[0],
+			e->origin[1] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[1],
+			e->origin[2] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[2]);
+	}
+	else {
+		TranMat = matrix::CreateTranslation(e->origin[0], e->origin[1], e->origin[2]);
+	}
+
+	result = RotXMat * RotYMat * RotZMat * TranMat;
+	return result;
 }

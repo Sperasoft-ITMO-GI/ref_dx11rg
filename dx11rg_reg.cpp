@@ -45,10 +45,10 @@ struct model_s* R_RegisterModel(char* name) {
 			//mod->numframes = pheader->num_frames;
 			//PGM
 		}
-		//else if (mod->type == mod_brush) {
-		//	for (i = 0; i < mod->numtexinfo; i++)
-		//		mod->texinfo[i].image->registration_sequence = RM.registration_sequence;
-		//}
+		else if (mod->type == mod_brush) {
+			for (i = 0; i < mod->numtexinfo; i++)
+				mod->texinfo[i].image->registration_sequence = RM.registration_sequence;
+		}
 	}
 	return mod;
 }

@@ -1,6 +1,7 @@
 #include "RegistrationManager.h"
 #include "dx11rg_local.h"
 #include	<fstream>
+#define _CRT_SECURE_NO_WARNINGS
 
 RegistrationManager::RegistrationManager() {
 	for (int i = 0; i < MAX_DXTEXTURES; i++) {
@@ -303,7 +304,7 @@ model_t* RegistrationManager::FindModel(const char* name, qboolean crash) {
 	mod = dxModels[i];
 
 
-	strcpy(mod->name, name);
+	strcpy_s<MAX_QPATH>(mod->name, name);
 
 	//
 	// load the file
@@ -340,6 +341,7 @@ model_t* RegistrationManager::FindModel(const char* name, qboolean crash) {
 	case IDBSPHEADER:
 		loadmodel->extradata = Hunk_Begin(0x1000000);
 		LoadBrushModel(mod, buf);
+		mod->type == mod_brush;
 		break;
 
 	default:
@@ -1311,7 +1313,7 @@ image_t* RegistrationManager::LoadPic(char* name, byte* pic, int width, int heig
 
 	if (strlen(name) >= sizeof(image->name))
 		ri.Sys_Error(ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
-	strcpy(image->name, name);
+	strcpy_s<256>(image->name, name);
 	image->registration_sequence = registration_sequence;
 
 	image->width = width;

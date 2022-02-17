@@ -7,32 +7,8 @@ float	shadelight[3];
 
 
 
-matrix LastEntityWorldMatrix;
-void R_RotateForEntity(entity_t* e) {
-	//	qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
-	//
-	//	qglRotatef(e->angles[1], 0, 0, 1);
-	//	qglRotatef(-e->angles[0], 0, 1, 0);
-	//	qglRotatef(-e->angles[2], 1, 0, 0);
 
-		// Q2 camera transform
-	matrix RotZMat = matrix::CreateRotationZ(DegToRad(e->angles[1]));
-	matrix RotYMat = matrix::CreateRotationY(DegToRad(-e->angles[0]));
-	matrix RotXMat = matrix::CreateRotationX(DegToRad(-e->angles[2]));
-	matrix TranMat = matrix::CreateTranslation(
-		e->origin[0] *(1- currententity->backlerp)+ currententity->backlerp* e->oldorigin[0],
-		e->origin[1] *(1- currententity->backlerp)+ currententity->backlerp* e->oldorigin[1],
-		e->origin[2] *(1- currententity->backlerp)+ currententity->backlerp* e->oldorigin[2]);
 
-	LastEntityWorldMatrix = TranMat;
-	LastEntityWorldMatrix = XMMatrixMultiply(RotZMat, LastEntityWorldMatrix);
-	LastEntityWorldMatrix = XMMatrixMultiply(RotYMat, LastEntityWorldMatrix);
-	LastEntityWorldMatrix = XMMatrixMultiply(RotXMat, LastEntityWorldMatrix);
-}
-
-void R_SetIdentityTransformForEntity() {
-	LastEntityWorldMatrix = matrix::CreateTranslation(0,0,0);
-}
 
 /*
 =================
@@ -277,21 +253,17 @@ void R_DrawAliasModel(entity_t* e) {
 	//if (!r_lerpmodels->value)
 	//	currententity->backlerp = 0;
 
-	R_SetIdentityTransformForEntity();
 
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 	e->angles[ROLL] = -e->angles[ROLL];		// sigh.
-	R_RotateForEntity(e);
+	Transform position = Transform(R_RotateForEntity(e));
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 	e->angles[ROLL] = -e->angles[ROLL];		// sigh.
 
-
-	Transform position = Transform(LastEntityWorldMatrix);
-		
-		//Transform(
-		//{currententity->origin[0],currententity->origin[1], currententity->origin[2] },
-		//{ currententity->angles[0], currententity->angles[1], currententity->angles[2] },
-		//{ 1,1,1 });
+	//Transform(
+	//{currententity->origin[0],currententity->origin[1], currententity->origin[2] },
+	//{ currententity->angles[0], currententity->angles[1], currententity->angles[2] },
+	//{ 1,1,1 });
 
 
 	if (currentmodel->num_frames == 1)
@@ -300,6 +272,8 @@ void R_DrawAliasModel(entity_t* e) {
 	else
 		RD.DrawFramedModel(currentmodel->modelId, skin->texnum, position,
 			currententity->oldframe, currententity->frame, currententity->backlerp, MBAD_UV | MLERP);
+
+
 	//GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp);
 
 	/*GL_TexEnv(GL_REPLACE);

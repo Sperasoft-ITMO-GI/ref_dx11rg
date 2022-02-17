@@ -59,7 +59,7 @@ extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 float colorBuf[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 bool multiTexture = false;
 
-void SmartTriangulation(std::vector<uint16_t>* ind, int num) {
+void SmartTriangulation(std::vector<uint32_t>* ind, int num) {
 	for (int i = 1; i < num - 1; i++) {
 		ind->push_back(0);
 		ind->push_back(i + 1);
@@ -97,41 +97,49 @@ image_t* R_TextureAnimation(mtexinfo_t* tex) {
 	return tex->image;
 }
 
+Transform hashedTransform;
+
 /*
 ================
 DrawGLPoly
 ================
 */
-void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines) {
+void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = float2{0,0}) {
 	int		i;
 	float* v;
 
-	UPVertex vert = {};
-	std::vector<UPVertex> vect;
+	if (p->savedData.indexOffset == -1) {
 
-	v = p->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE) {
-		//qglTexCoord2f(v[3], v[4]);
-		//qglVertex3fv(v);
+		UPVertex vert = {};
+		std::vector<UPVertex> vect;
 
-		vert.position.x = v[0];
-		vert.position.y = v[1];
-		vert.position.z = v[2];
-		vert.texcoord.x = v[3];
-		vert.texcoord.y = v[4];
+		v = p->verts[0];
+		for (i = 0; i < p->numverts; i++, v += VERTEXSIZE) {
+			//qglTexCoord2f(v[3], v[4]);
+			//qglVertex3fv(v);
 
-		vect.push_back(vert);
+			vert.position.x = v[0];
+			vert.position.y = v[1];
+			vert.position.z = v[2];
+			vert.texcoord.x = v[3];
+			vert.texcoord.y = v[4];
+
+			vect.push_back(vert);
+		}
+
+		std::vector<uint32_t> indexes;
+
+		SmartTriangulation(&indexes, p->numverts);
+
+		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+			p->numverts - 2,vect, indexes };
+
+
+		p->savedData = RD.RegisterUserPolygon(model);
 	}
-
-	std::vector<uint16_t> indexes;
-
-	SmartTriangulation(&indexes, p->numverts);
-
-	UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-		p->numverts - 2,vect,indexes };
-
-
-	RD.DrawUserPolygon(model, texNum, Transform(), float4{ colorBuf }, defines );
+	UPDrawData data = { hashedTransform , texOffsets, float4{ colorBuf }, defines };
+	RD.DrawUserPolygon(p->savedData, texNum, data);
+	//texNum, hashedTransform, , ;
 }
 
 //============
@@ -141,47 +149,48 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines) {
 DrawGLFlowingPoly -- version of DrawGLPoly that handles scrolling texture
 ================
 */
-void DrawGLFlowingPoly(msurface_t* fa, int texNum, int defines) {
+void DrawGLFlowingPoly(msurface_t* fa, int texNum, uint64_t defines) {
 	int		i;
 	float* v;
-	glpoly_t* p;
+	//glpoly_t* p;
 	float	scroll;
-
-	p = fa->polys;
+	//p = fa->polys;
 
 	scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
 	if (scroll == 0.0)
 		scroll = -64.0;
 
-	//qglBegin(GL_POLYGON);
-	printf("DrawGLFlowingPoly found!!!\n");
-	UPVertex vert = {};
-	std::vector<UPVertex> vect;
-
-	v = p->verts[0];
-	for (i = 0; i < p->numverts; i++, v += VERTEXSIZE) {
-		//qglTexCoord2f((v[3] + scroll), v[4]);
-		//qglVertex3fv(v);
-
-		vert.position.x = v[0];
-		vert.position.y = v[1];
-		vert.position.z = v[2];
-		vert.texcoord.x = v[3] + scroll;
-		vert.texcoord.y = v[4];
-
-		vect.push_back(vert);
-	}
-
-	std::vector<uint16_t> indexes;
-
-	SmartTriangulation(&indexes, p->numverts);
-
-	UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-		p->numverts - 1,vect,indexes };
-
-
-	RD.DrawUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
-	//qglEnd();
+	DrawGLPoly(fa->polys, texNum, defines, float2{ scroll , 0 });
+	return;
+	////qglBegin(GL_POLYGON);
+	//printf("DrawGLFlowingPoly found!!!\n");
+	//UPVertex vert = {};
+	//std::vector<UPVertex> vect;
+	//
+	//v = p->verts[0];
+	//for (i = 0; i < p->numverts; i++, v += VERTEXSIZE) {
+	//	//qglTexCoord2f((v[3] + scroll), v[4]);
+	//	//qglVertex3fv(v);
+	//
+	//	vert.position.x = v[0];
+	//	vert.position.y = v[1];
+	//	vert.position.z = v[2];
+	//	vert.texcoord.x = v[3] + scroll;
+	//	vert.texcoord.y = v[4];
+	//
+	//	vect.push_back(vert);
+	//}
+	//
+	//std::vector<uint16_t> indexes;
+	//
+	//SmartTriangulation(&indexes, p->numverts);
+	//
+	//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+	//	p->numverts - 1,vect,indexes };
+	//
+	//
+	//RD.DrawNoHashUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
+	////qglEnd();
 }
 //PGM
 //============
@@ -190,38 +199,38 @@ void DrawGLFlowingPoly(msurface_t* fa, int texNum, int defines) {
 ** R_DrawTriangleOutlines
 */
 void R_DrawTriangleOutlines(void) {
-	int			i, j;
-	glpoly_t* p;
-
-	if (true/*!gl_showtris->value*/)
-		return;
-
-	//qglDisable(GL_TEXTURE_2D);
-	//qglDisable(GL_DEPTH_TEST);
-	//qglColor4f(1, 1, 1, 1);
-
-	colorBuf[0] = 1.0f;
-	colorBuf[1] = 1.0f;
-	colorBuf[2] = 1.0f;
-	colorBuf[3] = 1.0f;
-
-	for (i = 0; i < MAX_LIGHTMAPS; i++) {
-		msurface_t* surf;
-
-		for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain) {
-			p = surf->polys;
-			for (; p; p = p->chain) {
-				for (j = 2; j < p->numverts; j++) {
-					//qglBegin(GL_LINE_STRIP);
-					//qglVertex3fv(p->verts[0]);
-					//qglVertex3fv(p->verts[j - 1]);
-					//qglVertex3fv(p->verts[j]);
-					//qglVertex3fv(p->verts[0]);
-					//qglEnd();
-				}
-			}
-		}
-	}
+	//int			i, j;
+	//glpoly_t* p;
+	//
+	//if (true/*!gl_showtris->value*/)
+	//	return;
+	//
+	////qglDisable(GL_TEXTURE_2D);
+	////qglDisable(GL_DEPTH_TEST);
+	////qglColor4f(1, 1, 1, 1);
+	//
+	//colorBuf[0] = 1.0f;
+	//colorBuf[1] = 1.0f;
+	//colorBuf[2] = 1.0f;
+	//colorBuf[3] = 1.0f;
+	//
+	//for (i = 0; i < MAX_LIGHTMAPS; i++) {
+	//	msurface_t* surf;
+	//
+	//	for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain) {
+	//		p = surf->polys;
+	//		for (; p; p = p->chain) {
+	//			for (j = 2; j < p->numverts; j++) {
+	//				//qglBegin(GL_LINE_STRIP);
+	//				//qglVertex3fv(p->verts[0]);
+	//				//qglVertex3fv(p->verts[j - 1]);
+	//				//qglVertex3fv(p->verts[j]);
+	//				//qglVertex3fv(p->verts[0]);
+	//				//qglEnd();
+	//			}
+	//		}
+	//	}
+	//}
 
 	//qglEnable(GL_DEPTH_TEST);
 	//qglEnable(GL_TEXTURE_2D);
@@ -239,80 +248,84 @@ void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum) {
 	//cbp.color[3] = colorBuf[3];
 
 	if (soffset == 0 && toffset == 0) {
+
+
 		for (; p != 0; p = p->chain) {
-			float* v;
-			int j;
-
-			//qglBegin(GL_POLYGON);
-			UPVertex vert = {};
-			std::vector<UPVertex> vect;
-
-			v = p->verts[0];
-			for (j = 0; j < p->numverts; j++, v += VERTEXSIZE) {
-				//qglTexCoord2f(v[5], v[6]);
-				//qglVertex3fv(v);
-
-
-				vert.position.x = v[0];
-				vert.position.y = v[1];
-				vert.position.z = v[2];
-				vert.texcoord.x = v[3];
-				vert.texcoord.y = v[4];
-
-				vect.push_back(vert);
-			}
-
-
-
-			std::vector<uint16_t> indexes;
-
-			SmartTriangulation(&indexes, p->numverts);
-
-			UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-				p->numverts - 1,vect,indexes };
-
-
-
-			RD.DrawUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
+			DrawGLPoly(p, texNum, 0, float2{ 0 , 0 });
+			//float* v;
+			//int j;
+			//
+			////qglBegin(GL_POLYGON);
+			//UPVertex vert = {};
+			//std::vector<UPVertex> vect;
+			//
+			//v = p->verts[0];
+			//for (j = 0; j < p->numverts; j++, v += VERTEXSIZE) {
+			//	//qglTexCoord2f(v[5], v[6]);
+			//	//qglVertex3fv(v);
+			//
+			//
+			//	vert.position.x = v[0];
+			//	vert.position.y = v[1];
+			//	vert.position.z = v[2];
+			//	vert.texcoord.x = v[3];
+			//	vert.texcoord.y = v[4];
+			//
+			//	vect.push_back(vert);
+			//}
+			//
+			//
+			//
+			//std::vector<uint16_t> indexes;
+			//
+			//SmartTriangulation(&indexes, p->numverts);
+			//
+			//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+			//	p->numverts - 1,vect,indexes };
+			//
+			//
+			//
+			//RD.DrawNoHashUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
 
 			//qglEnd();
 		}
 	}
 	else {
 		for (; p != 0; p = p->chain) {
-			float* v;
-			int j;
-
-			//qglBegin(GL_POLYGON);
-
-
-			UPVertex vert = {};
-			std::vector<UPVertex> vect;
-
-			v = p->verts[0];
-			for (j = 0; j < p->numverts; j++, v += VERTEXSIZE) {
-				//qglTexCoord2f(v[5] - soffset, v[6] - toffset);
-				//qglVertex3fv(v);
-
-				vert.position.x = v[0];
-				vert.position.y = v[1];
-				vert.position.z = v[2];
-				vert.texcoord.x = v[5] - soffset;
-				vert.texcoord.y = v[6] - toffset;
-
-				vect.push_back(vert);
-			}
-
-			std::vector<uint16_t> indexes;
-
-			// Временно, пока не придумаем чего-нибудь получше
-			SmartTriangulation(&indexes, p->numverts);
-
-
-			UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-				p->numverts - 1,vect,indexes };
-
-			RD.DrawUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
+			DrawGLPoly(p, texNum, 0, float2{ -soffset, -toffset });
+			//float* v;						
+			//int j;
+			//
+			////qglBegin(GL_POLYGON);
+			//
+			//
+			//UPVertex vert = {};
+			//std::vector<UPVertex> vect;
+			//
+			//v = p->verts[0];
+			//for (j = 0; j < p->numverts; j++, v += VERTEXSIZE) {
+			//	//qglTexCoord2f(v[5] - soffset, v[6] - toffset);
+			//	//qglVertex3fv(v);
+			//
+			//	vert.position.x = v[0];
+			//	vert.position.y = v[1];
+			//	vert.position.z = v[2];
+			//	vert.texcoord.x = v[5] - soffset;
+			//	vert.texcoord.y = v[6] - toffset;
+			//
+			//	vect.push_back(vert);
+			//}
+			//
+			//std::vector<uint16_t> indexes;
+			//
+			//// Временно, пока не придумаем чего-нибудь получше
+			//SmartTriangulation(&indexes, p->numverts);
+			//
+			//
+			//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+			//	p->numverts - 1,vect,indexes };
+			//
+			//RD.DrawNoHashUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
 
 			//qglEnd();
 		}
@@ -793,78 +806,81 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 				scroll = -64.0;
 
 			for (p = surf->polys; p; p = p->chain) {
-				UPVertex vert = {};
-				std::vector<UPVertex> vect;
 
-				v = p->verts[0];
-				//qglBegin(GL_POLYGON);
-				for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
-					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-					//qglVertex3fv(v);
+				//DrawGLPoly(p, texNum, defines, float2{ scroll , 0 });
 
-					vert.position.x = v[0];
-					vert.position.y = v[1];
-					vert.position.z = v[2];
-					vert.texcoord.x = v[3] + scroll;
-					vert.texcoord.y = v[4];
-					vert.lightTexcoord.x = v[5];
-					vert.lightTexcoord.y = v[6];
-
-					vect.push_back(vert);
-				}
-
-				std::vector<uint16_t> indexes;
-
-				SmartTriangulation(&indexes, nv);
-
-
-				UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-					p->numverts - 2,vect,indexes };
-
+				//UPVertex vert = {};
+				//std::vector<UPVertex> vect;
+				//
+				//v = p->verts[0];
+				////qglBegin(GL_POLYGON);
+				//for (i = 0; i < nv; i++, v += VERTEXSIZE) {
+				//	//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
+				//	//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+				//	//qglVertex3fv(v);
+				//
+				//	vert.position.x = v[0];
+				//	vert.position.y = v[1];
+				//	vert.position.z = v[2];
+				//	vert.texcoord.x = v[3] + scroll;
+				//	vert.texcoord.y = v[4];
+				//	vert.lightTexcoord.x = v[5];
+				//	vert.lightTexcoord.y = v[6];
+				//
+				//	vect.push_back(vert);
+				//}
+				//
+				//std::vector<uint16_t> indexes;
+				//
+				//SmartTriangulation(&indexes, nv);
+				//
+				//
+				//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+				//	p->numverts - 2,vect,indexes };
+				//
 				//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf }, UPRED);//BSP_LIGHTMAPPEDPOLY
 
 				//qglEnd();
 			}
 		}
 		else {
-			for (p = surf->polys; p; p = p->chain) {
-				UPVertex vert = {};
-				std::vector<UPVertex> vect;
-
-				v = p->verts[0];
-				//qglBegin(GL_POLYGON);
-				for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
-					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-					//qglVertex3fv(v);
-
-					//float soffset = (surf->light_s - surf->dlight_s) * (1.0 / 128.0);
-					//float toffset = (surf->light_t - surf->dlight_t) * (1.0 / 128.0);
-
-					vert.position.x = v[0];
-					vert.position.y = v[1];
-					vert.position.z = v[2];
-					vert.texcoord.x = v[3];
-					vert.texcoord.y = v[4];
-					vert.lightTexcoord.x = v[5];
-					vert.lightTexcoord.y = v[6];
-
-					vect.push_back(vert);
-				}
-
-				std::vector<uint16_t> indexes;
-
-				SmartTriangulation(&indexes, nv);
-
-				UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-					p->numverts - 2,vect,indexes };
-
-
-				//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf }, UPRED);//BSP_LIGHTMAPPEDPOLY
-
-				//qglEnd();
-			}
+			//for (p = surf->polys; p; p = p->chain) {
+			//	UPVertex vert = {};
+			//	std::vector<UPVertex> vect;
+			//
+			//	v = p->verts[0];
+			//	//qglBegin(GL_POLYGON);
+			//	for (i = 0; i < nv; i++, v += VERTEXSIZE) {
+			//		//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
+			//		//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+			//		//qglVertex3fv(v);
+			//
+			//		//float soffset = (surf->light_s - surf->dlight_s) * (1.0 / 128.0);
+			//		//float toffset = (surf->light_t - surf->dlight_t) * (1.0 / 128.0);
+			//
+			//		vert.position.x = v[0];
+			//		vert.position.y = v[1];
+			//		vert.position.z = v[2];
+			//		vert.texcoord.x = v[3];
+			//		vert.texcoord.y = v[4];
+			//		vert.lightTexcoord.x = v[5];
+			//		vert.lightTexcoord.y = v[6];
+			//
+			//		vect.push_back(vert);
+			//	}
+			//
+			//	std::vector<uint16_t> indexes;
+			//
+			//	SmartTriangulation(&indexes, nv);
+			//
+			//	UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+			//		p->numverts - 2,vect,indexes };
+			//
+			//
+			//	//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf }, UPRED);//BSP_LIGHTMAPPEDPOLY
+			//
+			//	//qglEnd();
+			//}
 		}
 		//PGM
 		//==========
@@ -878,80 +894,80 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 		//==========
 		//PGM
 		if (surf->texinfo->flags & SURF_FLOWING) {
-			float scroll;
-
-			scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
-			if (scroll == 0.0)
-				scroll = -64.0;
-
-			for (p = surf->polys; p; p = p->chain) {
-				UPVertex vert = {};
-				std::vector<UPVertex> vect;
-
-				v = p->verts[0];
-				//qglBegin(GL_POLYGON);
-				for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
-					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-					//qglVertex3fv(v);
-
-					vert.position.x = v[0];
-					vert.position.y = v[1];
-					vert.position.z = v[2];
-					vert.texcoord.x = v[3] + scroll;
-					vert.texcoord.y = v[4];
-					vert.lightTexcoord.x = v[5];
-					vert.lightTexcoord.y = v[6];
-
-					vect.push_back(vert);
-				}
-
-				std::vector<uint16_t> indexes;
-
-				SmartTriangulation(&indexes, nv);
-
-
-				UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-					p->numverts - 2,vect,indexes };
-
-				//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
-				//qglEnd();
-			}
+			//float scroll;
+			//
+			//scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
+			//if (scroll == 0.0)
+			//	scroll = -64.0;
+			//
+			//for (p = surf->polys; p; p = p->chain) {
+			//	UPVertex vert = {};
+			//	std::vector<UPVertex> vect;
+			//
+			//	v = p->verts[0];
+			//	//qglBegin(GL_POLYGON);
+			//	for (i = 0; i < nv; i++, v += VERTEXSIZE) {
+			//		//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
+			//		//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+			//		//qglVertex3fv(v);
+			//
+			//		vert.position.x = v[0];
+			//		vert.position.y = v[1];
+			//		vert.position.z = v[2];
+			//		vert.texcoord.x = v[3] + scroll;
+			//		vert.texcoord.y = v[4];
+			//		vert.lightTexcoord.x = v[5];
+			//		vert.lightTexcoord.y = v[6];
+			//
+			//		vect.push_back(vert);
+			//	}
+			//
+			//	std::vector<uint16_t> indexes;
+			//
+			//	SmartTriangulation(&indexes, nv);
+			//
+			//
+			//	UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+			//		p->numverts - 2,vect,indexes };
+			//
+			//	//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
+			//	//qglEnd();
+			//}
 		}
 		else {
 			//PGM
 			//==========
 			for (p = surf->polys; p; p = p->chain) {
-				UPVertex vert = {};
-				std::vector<UPVertex> vect;
-
-				v = p->verts[0];
-				//qglBegin(GL_POLYGON);
-				for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-					//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
-					//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-					//qglVertex3fv(v);
-
-					vert.position.x = v[0];
-					vert.position.y = v[1];
-					vert.position.z = v[2];
-					vert.texcoord.x = v[3];
-					vert.texcoord.y = v[4];
-					vert.lightTexcoord.x = v[5];
-					vert.lightTexcoord.y = v[6];
-
-					vect.push_back(vert);
-				}
-
-				std::vector<uint16_t> indexes;
-
-				SmartTriangulation(&indexes, nv);
-				UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-					p->numverts - 1,vect,indexes };
-
-				//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
-
-				//qglEnd();
+				//UPVertex vert = {};
+				//std::vector<UPVertex> vect;
+				//
+				//v = p->verts[0];
+				////qglBegin(GL_POLYGON);
+				//for (i = 0; i < nv; i++, v += VERTEXSIZE) {
+				//	//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
+				//	//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
+				//	//qglVertex3fv(v);
+				//
+				//	vert.position.x = v[0];
+				//	vert.position.y = v[1];
+				//	vert.position.z = v[2];
+				//	vert.texcoord.x = v[3];
+				//	vert.texcoord.y = v[4];
+				//	vert.lightTexcoord.x = v[5];
+				//	vert.lightTexcoord.y = v[6];
+				//
+				//	vect.push_back(vert);
+				//}
+				//
+				//std::vector<uint16_t> indexes;
+				//
+				//SmartTriangulation(&indexes, nv);
+				//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+				//	p->numverts - 1,vect,indexes };
+				//
+				////RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
+				//
+				////qglEnd();
 			}
 			//==========
 			//PGM
@@ -1100,11 +1116,11 @@ void R_DrawBrushModel(entity_t* e) {
 	//qglPushMatrix();
 	//auto saveMatrix = renderer->GetModelView();	
 
-	e->angles[0] = -e->angles[0];	// stupid quake bug
-	e->angles[2] = -e->angles[2];	// stupid quake bug
-	//renderer->SetModelViewMatrix(R_RotateForEntity(e) * renderer->GetModelView());
-	e->angles[0] = -e->angles[0];	// stupid quake bug
-	e->angles[2] = -e->angles[2];	// stupid quake bug
+	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
+	e->angles[ROLL] = -e->angles[ROLL];		// sigh.
+	hashedTransform = Transform(R_RotateForEntity(e, false));
+	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
+	e->angles[ROLL] = -e->angles[ROLL];		// sigh.
 
 	//GL_EnableMultitexture(True);
 	//GL_SelectTexture(GL_TEXTURE0_SGIS);
@@ -1112,7 +1128,7 @@ void R_DrawBrushModel(entity_t* e) {
 	//GL_SelectTexture(GL_TEXTURE1_SGIS);
 	//GL_TexEnv(GL_MODULATE);
 
-	//R_DrawInlineBModel();
+	R_DrawInlineBModel();
 	//GL_EnableMultitexture(False);
 
 	//qglPopMatrix();
@@ -1245,6 +1261,8 @@ R_DrawWorld
 */
 void R_DrawWorld(void) {
 	entity_t	ent;
+
+	hashedTransform = Transform();
 
 	if (!r_drawworld->value)
 		return;
@@ -1532,6 +1550,7 @@ void GL_BuildPolygonFromSurface(msurface_t* fa) {
 	poly = (glpoly_t*)Hunk_Alloc(sizeof(glpoly_t) + (lnumverts - 4) * VERTEXSIZE * sizeof(float));
 	poly->next = fa->polys;
 	poly->flags = fa->flags;
+	poly->savedData = UPHashData{ -1,-1,-1 };
 	fa->polys = poly;
 	poly->numverts = lnumverts;
 

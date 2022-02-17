@@ -102,8 +102,9 @@ typedef struct glpoly_s {
 	struct	glpoly_s* chain;
 	int		numverts;
 	int		flags;			// for SURF_UNDERWATER (not needed anymore?)
+	UPHashData savedData;
 	float	verts[4][VERTEXSIZE];	// variable sized (xyz s1t1 s2t2)
-	matrix test[20];
+
 } glpoly_t;
 
 typedef struct msurface_s {
