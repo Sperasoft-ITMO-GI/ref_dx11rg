@@ -66,6 +66,8 @@ public:
 	void BuildPalettedTexture(unsigned char* paletted_texture, unsigned char* scaled, int scaled_width, int scaled_height);
 
 
+	void CreateLightmap(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap);
+
 
 	image_t* draw_chars;
 	uint32_t rawPalette[256];

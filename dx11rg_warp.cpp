@@ -234,7 +234,7 @@ void EmitWaterPolys(msurface_t* fa) {
 		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLESTRIP,
 			p->numverts - 2, vect,indexes };
 
-		UPDrawData data = { Transform() , float2{0,0}, float4{ colorBuf }, UPWATER };
+		UPDrawData data = { Transform() , float2{0,0}, float4{ colorBuf }, UPALPHA };
 
 
 		if (p->savedData.indexOffset == -1) {

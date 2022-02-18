@@ -43,6 +43,7 @@ typedef struct {
 
 	// the lightmap texture data needs to be kept in
 	// main memory so texsubimage can update properly
+	//TextureData lightmap_buffer = TextureData{ BLOCK_WIDTH , BLOCK_HEIGHT };
 	byte		lightmap_buffer[4 * BLOCK_WIDTH * BLOCK_HEIGHT];
 } gllightmapstate_t;
 
@@ -57,7 +58,7 @@ extern void R_SetCacheState(msurface_t* surf);
 extern void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);
 
 float colorBuf[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-bool multiTexture = false;
+bool multiTexture = true;
 
 void SmartTriangulation(std::vector<uint32_t>* ind, int num) {
 	for (int i = 1; i < num - 1; i++) {
@@ -104,7 +105,7 @@ Transform hashedTransform;
 DrawGLPoly
 ================
 */
-void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = float2{0,0}) {
+void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = float2{ 0,0 }, int lightTex = -1) {
 	int		i;
 	float* v;
 
@@ -123,6 +124,8 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 			vert.position.z = v[2];
 			vert.texcoord.x = v[3];
 			vert.texcoord.y = v[4];
+			vert.lightTexcoord.x = v[5];
+			vert.lightTexcoord.y = v[6];
 
 			vect.push_back(vert);
 		}
@@ -137,8 +140,14 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 
 		p->savedData = RD.RegisterUserPolygon(model);
 	}
+
 	UPDrawData data = { hashedTransform , texOffsets, float4{ colorBuf }, defines };
-	RD.DrawUserPolygon(p->savedData, texNum, data);
+	if (lightTex == -1)
+
+		RD.DrawUserPolygon(p->savedData, texNum, data);
+	else
+		RD.DrawUserPolygon(p->savedData, texNum, lightTex, data);
+
 	//texNum, hashedTransform, , ;
 }
 
@@ -240,94 +249,17 @@ void R_DrawTriangleOutlines(void) {
 ** DrawGLPolyChain
 */
 void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum) {
-	//ConstantBufferPolygon cbp;
-	//cbp.position_transform = renderer->GetModelView() * renderer->GetPerspective();
-	//cbp.color[0] = colorBuf[0];
-	//cbp.color[1] = colorBuf[1];
-	//cbp.color[2] = colorBuf[2];
-	//cbp.color[3] = colorBuf[3];
 
 	if (soffset == 0 && toffset == 0) {
 
 
 		for (; p != 0; p = p->chain) {
 			DrawGLPoly(p, texNum, 0, float2{ 0 , 0 });
-			//float* v;
-			//int j;
-			//
-			////qglBegin(GL_POLYGON);
-			//UPVertex vert = {};
-			//std::vector<UPVertex> vect;
-			//
-			//v = p->verts[0];
-			//for (j = 0; j < p->numverts; j++, v += VERTEXSIZE) {
-			//	//qglTexCoord2f(v[5], v[6]);
-			//	//qglVertex3fv(v);
-			//
-			//
-			//	vert.position.x = v[0];
-			//	vert.position.y = v[1];
-			//	vert.position.z = v[2];
-			//	vert.texcoord.x = v[3];
-			//	vert.texcoord.y = v[4];
-			//
-			//	vect.push_back(vert);
-			//}
-			//
-			//
-			//
-			//std::vector<uint16_t> indexes;
-			//
-			//SmartTriangulation(&indexes, p->numverts);
-			//
-			//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-			//	p->numverts - 1,vect,indexes };
-			//
-			//
-			//
-			//RD.DrawNoHashUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
-
-			//qglEnd();
 		}
 	}
 	else {
 		for (; p != 0; p = p->chain) {
 			DrawGLPoly(p, texNum, 0, float2{ -soffset, -toffset });
-			//float* v;						
-			//int j;
-			//
-			////qglBegin(GL_POLYGON);
-			//
-			//
-			//UPVertex vert = {};
-			//std::vector<UPVertex> vect;
-			//
-			//v = p->verts[0];
-			//for (j = 0; j < p->numverts; j++, v += VERTEXSIZE) {
-			//	//qglTexCoord2f(v[5] - soffset, v[6] - toffset);
-			//	//qglVertex3fv(v);
-			//
-			//	vert.position.x = v[0];
-			//	vert.position.y = v[1];
-			//	vert.position.z = v[2];
-			//	vert.texcoord.x = v[5] - soffset;
-			//	vert.texcoord.y = v[6] - toffset;
-			//
-			//	vect.push_back(vert);
-			//}
-			//
-			//std::vector<uint16_t> indexes;
-			//
-			//// Временно, пока не придумаем чего-нибудь получше
-			//SmartTriangulation(&indexes, p->numverts);
-			//
-			//
-			//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-			//	p->numverts - 1,vect,indexes };
-			//
-			//RD.DrawNoHashUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
-
-			//qglEnd();
 		}
 	}
 }
@@ -398,23 +330,23 @@ void R_BlendLightmaps(void) {
 	/*
 	** render static lightmaps first
 	*/
-	//for (i = 1; i < MAX_LIGHTMAPS; i++) {
-	//	if (gl_lms.lightmap_surfaces[i]) {
-	//		if (currentmodel == r_worldmodel)
-	//			c_visible_lightmaps++;
-	//		//GL_Bind(dx11_state.lightmap_textures + i);
-	//
-	//		for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain) {
-	//			if (surf->polys)
-	//				DrawGLPolyChain(surf->polys, 0, 0, lightmap_textures + i);
-	//		}
-	//	}
-	//}
-	
+	for (i = 1; i < MAX_LIGHTMAPS; i++) {
+		if (gl_lms.lightmap_surfaces[i]) {
+			if (currentmodel == r_worldmodel)
+				c_visible_lightmaps++;
+			//GL_Bind(dx11_state.lightmap_textures + i);
+
+			for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain) {
+				if (surf->polys)
+					DrawGLPolyChain(surf->polys, 0, 0, lightmap_textures + i);
+			}
+		}
+	}
+
 	/*
 	** render dynamic lightmaps
 	*/
-	if (false/*gl_dynamic->value*/) {
+	if (true/*gl_dynamic->value*/) {
 		LM_InitBlock();
 
 		//GL_Bind(dx11_state.lightmap_textures + 0);
@@ -570,6 +502,7 @@ void R_RenderBrushPoly(msurface_t* fa) {
 				smax, tmax,
 				GL_LIGHTMAP_FORMAT,
 				GL_UNSIGNED_BYTE, temp);*/
+			RD.UpdateTexture(lightmap_textures + fa->lightmaptexturenum, fa->light_s, fa->light_t, smax, tmax, 0, (void*)temp);
 
 			//renderer->UpdateTextureInSRV(smax, tmax, fa->light_s, fa->light_t, 32,
 			//	(unsigned char*)temp, dx11_state.lightmap_textures + fa->lightmaptexturenum);
@@ -737,13 +670,13 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 			}
 		}
 	}
-	
+
 	if (is_dynamic) {
 		unsigned	temp[128 * 128];
 		int			smax, tmax;
 
 		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && (surf->dlightframe != r_framecount)) {
-			/*
+
 			smax = (surf->extents[0] >> 4) + 1;
 			tmax = (surf->extents[1] >> 4) + 1;
 
@@ -759,13 +692,13 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 			//	smax, tmax,
 			//	GL_LIGHTMAP_FORMAT,
 			//	GL_UNSIGNED_BYTE, temp);
+			RD.UpdateTexture(lightmap_textures + surf->lightmaptexturenum, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
 
-			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-				(unsigned char*)temp, dx11_state.lightmap_textures + surf->lightmaptexturenum);
-*/
+			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
+			//	(unsigned char*)temp, lightmap_textures + surf->lightmaptexturenum);
+
 		}
 		else {
-		/*
 			// TODO: Here is a bug with dynamic lightmap update
 
 			smax = (surf->extents[0] >> 4) + 1;
@@ -785,12 +718,13 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 			//
 			//	/*renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 			//		(unsigned char*)temp, dx11_state.lightmap_textures + 0);
+			RD.UpdateTexture(lightmap_textures + 0, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
 
-			renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-				(unsigned char*)temp, dx11_state.lightmap_textures + 0);*/
+			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
+			//	(unsigned char*)temp, lightmap_textures + 0);
 
 		}
-		
+
 		c_brush_polys++;
 
 		//GL_MBind(GL_TEXTURE0_SGIS, image->texnum);
@@ -807,7 +741,41 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 
 			for (p = surf->polys; p; p = p->chain) {
 
-				//DrawGLPoly(p, texNum, defines, float2{ scroll , 0 });
+				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ scroll , 0 }, lightmap_textures + lmtex);
+
+
+			}
+		}
+		else {
+			for (p = surf->polys; p; p = p->chain) {
+
+				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ 0 , 0 }, lightmap_textures + lmtex);
+
+			}
+		}
+		//PGM
+		//==========
+	}
+	else {
+		c_brush_polys++;
+
+		//GL_MBind(GL_TEXTURE0_SGIS, image->texnum);
+		//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + lmtex);
+
+		//==========
+		//PGM
+		if (surf->texinfo->flags & SURF_FLOWING) {
+
+			float scroll;
+
+			scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
+			if (scroll == 0.0)
+				scroll = -64.0;
+
+			for (p = surf->polys; p; p = p->chain) {
+
+
+				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ scroll , 0 }, lightmap_textures + surf->lightmaptexturenum);
 
 				//UPVertex vert = {};
 				//std::vector<UPVertex> vect;
@@ -838,106 +806,16 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 				//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
 				//	p->numverts - 2,vect,indexes };
 				//
-				//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf }, UPRED);//BSP_LIGHTMAPPEDPOLY
-
+				//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
 				//qglEnd();
 			}
-		}
-		else {
-			//for (p = surf->polys; p; p = p->chain) {
-			//	UPVertex vert = {};
-			//	std::vector<UPVertex> vect;
-			//
-			//	v = p->verts[0];
-			//	//qglBegin(GL_POLYGON);
-			//	for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-			//		//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
-			//		//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-			//		//qglVertex3fv(v);
-			//
-			//		//float soffset = (surf->light_s - surf->dlight_s) * (1.0 / 128.0);
-			//		//float toffset = (surf->light_t - surf->dlight_t) * (1.0 / 128.0);
-			//
-			//		vert.position.x = v[0];
-			//		vert.position.y = v[1];
-			//		vert.position.z = v[2];
-			//		vert.texcoord.x = v[3];
-			//		vert.texcoord.y = v[4];
-			//		vert.lightTexcoord.x = v[5];
-			//		vert.lightTexcoord.y = v[6];
-			//
-			//		vect.push_back(vert);
-			//	}
-			//
-			//	std::vector<uint16_t> indexes;
-			//
-			//	SmartTriangulation(&indexes, nv);
-			//
-			//	UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-			//		p->numverts - 2,vect,indexes };
-			//
-			//
-			//	//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf }, UPRED);//BSP_LIGHTMAPPEDPOLY
-			//
-			//	//qglEnd();
-			//}
-		}
-		//PGM
-		//==========
-	}
-	else {
-		c_brush_polys++;
-
-		//GL_MBind(GL_TEXTURE0_SGIS, image->texnum);
-		//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + lmtex);
-
-		//==========
-		//PGM
-		if (surf->texinfo->flags & SURF_FLOWING) {
-			//float scroll;
-			//
-			//scroll = -64 * ((r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0));
-			//if (scroll == 0.0)
-			//	scroll = -64.0;
-			//
-			//for (p = surf->polys; p; p = p->chain) {
-			//	UPVertex vert = {};
-			//	std::vector<UPVertex> vect;
-			//
-			//	v = p->verts[0];
-			//	//qglBegin(GL_POLYGON);
-			//	for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-			//		//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
-			//		//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-			//		//qglVertex3fv(v);
-			//
-			//		vert.position.x = v[0];
-			//		vert.position.y = v[1];
-			//		vert.position.z = v[2];
-			//		vert.texcoord.x = v[3] + scroll;
-			//		vert.texcoord.y = v[4];
-			//		vert.lightTexcoord.x = v[5];
-			//		vert.lightTexcoord.y = v[6];
-			//
-			//		vect.push_back(vert);
-			//	}
-			//
-			//	std::vector<uint16_t> indexes;
-			//
-			//	SmartTriangulation(&indexes, nv);
-			//
-			//
-			//	UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-			//		p->numverts - 2,vect,indexes };
-			//
-			//	//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
-			//	//qglEnd();
-			//}
 		}
 		else {
 			//PGM
 			//==========
 			for (p = surf->polys; p; p = p->chain) {
+
+				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ 0 , 0 }, lightmap_textures + surf->lightmaptexturenum);
 				//UPVertex vert = {};
 				//std::vector<UPVertex> vect;
 				//
@@ -1456,7 +1334,7 @@ static void LM_UploadBlock(qboolean dynamic) {
 	//GL_Bind(dx11_state.lightmap_textures + texture);
 	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	/*
+
 	if (dynamic) {
 		int i;
 
@@ -1464,20 +1342,20 @@ static void LM_UploadBlock(qboolean dynamic) {
 			if (gl_lms.allocated[i] > height)
 				height = gl_lms.allocated[i];
 		}
-
-		renderer->UpdateTextureInSRV(BLOCK_WIDTH, height, 0, 0, 32,
-			gl_lms.lightmap_buffer, dx11_state.lightmap_textures + texture);
+		RD.UpdateTexture(lightmap_textures + texture, 0, 0, 32, height, 0,
+			gl_lms.lightmap_buffer);
 		/*qglTexSubImage2D(GL_TEXTURE_2D,
 			0,
 			0, 0,
 			BLOCK_WIDTH, height,
 			GL_LIGHTMAP_FORMAT,
 			GL_UNSIGNED_BYTE,
-			gl_lms.lightmap_buffer);
+			gl_lms.lightmap_buffer);*/
 	}
 	else {
-		renderer->AddTexturetoSRV(BLOCK_WIDTH, BLOCK_HEIGHT, 32,
-			gl_lms.lightmap_buffer, dx11_state.lightmap_textures + texture, true);
+		RD.RegisterTexture(lightmap_textures + texture, BLOCK_WIDTH, BLOCK_HEIGHT, gl_lms.lightmap_buffer, true);
+		//(, 32,
+		//	gl_lms.lightmap_buffer, , true);
 		/*qglTexImage2D(GL_TEXTURE_2D,
 			0,
 			gl_lms.internal_format,
@@ -1486,11 +1364,12 @@ static void LM_UploadBlock(qboolean dynamic) {
 			GL_LIGHTMAP_FORMAT,
 			GL_UNSIGNED_BYTE,
 			gl_lms.lightmap_buffer);
+			*/
 		if (++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS)
 			ri.Sys_Error(ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n");
 	}
 
-	*/
+
 }
 
 // returns a texture number and the position inside it
@@ -1624,7 +1503,7 @@ void GL_CreateSurfaceLightmap(msurface_t* surf) {
 
 	surf->lightmaptexturenum = gl_lms.current_lightmap_texture;
 
-	base = gl_lms.lightmap_buffer;
+	base = (byte*)gl_lms.lightmap_buffer;
 	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
 
 	R_SetCacheState(surf);
@@ -1722,10 +1601,11 @@ void GL_BeginBuildingLightmaps(model_t* m) {
 		GL_LIGHTMAP_FORMAT,
 		GL_UNSIGNED_BYTE,
 		dummy);
+		*/
+	RD.RegisterTexture(lightmap_textures + 0, BLOCK_WIDTH, BLOCK_HEIGHT, dummy, true);
+	//renderer->AddTexturetoSRV(BLOCK_WIDTH, BLOCK_HEIGHT, 32,
+	//	(unsigned char*)dummy, dx11_state.lightmap_textures + 0, true); 
 
-	renderer->AddTexturetoSRV(BLOCK_WIDTH, BLOCK_HEIGHT, 32,
-		(unsigned char*)dummy, dx11_state.lightmap_textures + 0, true); 
-	*/
 }
 
 /*

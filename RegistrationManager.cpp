@@ -1131,6 +1131,10 @@ void  RegistrationManager::BuildPalettedTexture(unsigned char* paletted_texture,
 	}
 }
 
+void RegistrationManager::CreateLightmap(int width, int height, int bits, unsigned char* data, int texNum, bool mipmap) {
+	
+}
+
 RegistrationManager::~RegistrationManager() {
 	for (int i = 0; i < MAX_DXTEXTURES; i++) {
 		delete dxTextures[i];

@@ -94,7 +94,7 @@ void R_RenderFrame(refdef_t* fd) {
 	//	c_alias_polys = 0;
 	//}
 	
-	//R_PushDlights();
+	R_PushDlights();
 	
 	//if (gl_finish->value)
 	//	qglFinish();
