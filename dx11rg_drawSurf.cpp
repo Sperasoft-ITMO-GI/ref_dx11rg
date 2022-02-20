@@ -647,6 +647,8 @@ void DrawTextureChains(void) {
 	}
 }
 
+size_t lightmapTex = 0;
+
 static void GL_RenderLightmappedPoly(msurface_t* surf) {
 	int		i, nv = surf->polys->numverts;
 	int		map;
@@ -685,7 +687,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 
 			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + surf->lightmaptexturenum);
 
-			lmtex = surf->lightmaptexturenum;
+			lmtex = lightmap_textures + surf->lightmaptexturenum;
 
 			//qglTexSubImage2D(GL_TEXTURE_2D, 0,
 			//	surf->light_s, surf->light_t,
@@ -708,7 +710,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 
 			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + 0);
 
-			lmtex = 0;
+			lmtex = 2 * lightmap_textures + lightmapTex;
 
 			///*qglTexSubImage2D(GL_TEXTURE_2D, 0,
 			//	surf->light_s, surf->light_t,
@@ -718,8 +720,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 			//
 			//	/*renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 			//		(unsigned char*)temp, dx11_state.lightmap_textures + 0);
-			RD.UpdateTexture(lightmap_textures + 0, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
-
+			RD.UpdateTexture(2*lightmap_textures + lightmapTex, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
+			lightmapTex++;
 			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 			//	(unsigned char*)temp, lightmap_textures + 0);
 
@@ -740,17 +742,12 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 				scroll = -64.0;
 
 			for (p = surf->polys; p; p = p->chain) {
-
-				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ scroll , 0 }, lightmap_textures + lmtex);
-
-
+				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ scroll , 0 }, lmtex);
 			}
 		}
 		else {
 			for (p = surf->polys; p; p = p->chain) {
-
-				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ 0 , 0 }, lightmap_textures + lmtex);
-
+				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ 0 , 0 }, lmtex);
 			}
 		}
 		//PGM
@@ -1165,6 +1162,7 @@ void R_DrawWorld(void) {
 	colorBuf[2] = 1.0f;
 	colorBuf[3] = 1.0f;
 	memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
+	lightmapTex = 0;
 	R_ClearSkyBox();
 
 	if (multiTexture) {
