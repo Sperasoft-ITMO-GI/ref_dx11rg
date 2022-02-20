@@ -256,23 +256,39 @@ void R_DrawAliasModel(entity_t* e) {
 
 	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 	e->angles[ROLL] = -e->angles[ROLL];		// sigh.
-	Transform position = Transform(R_RotateForEntity(e));
-	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
-	e->angles[ROLL] = -e->angles[ROLL];		// sigh.
 
 	//Transform(
 	//{currententity->origin[0],currententity->origin[1], currententity->origin[2] },
 	//{ currententity->angles[0], currententity->angles[1], currententity->angles[2] },
 	//{ 1,1,1 });
 
+	LerpModelDrawData data = { R_RotateForEntity(e), 
+		currentmodel->num_frames == 1,
+		currententity->backlerp, currententity->oldframe, currententity->frame, float4(),
+		MBAD_UV | MCOLORED };
+	
+	if (currentmodel->num_frames != 1) {
+		data.flags |= MLERP;
+	}
 
-	if (currentmodel->num_frames == 1)
-		RD.DrawFramedModel(currentmodel->modelId, skin->texnum, position,
-			currententity->oldframe, currententity->frame, currententity->backlerp, MBAD_UV | MLERP | MSINGLE_FRAME);
+	float	alpha;
+	if (currententity->flags & RF_TRANSLUCENT)
+		alpha = currententity->alpha;
 	else
-		RD.DrawFramedModel(currentmodel->modelId, skin->texnum, position,
-			currententity->oldframe, currententity->frame, currententity->backlerp, MBAD_UV | MLERP);
+		alpha = 1.0;
 
+	data.color = float4(shadelight[0], shadelight[1], shadelight[2], alpha);
+
+	if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE)) {
+		data.flags |= MNONORMAL;
+	}
+
+
+	
+	RD.DrawFramedModel(currentmodel->modelId, skin->texnum, data);
+
+	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
+	e->angles[ROLL] = -e->angles[ROLL];		// sigh.
 
 	//GL_DrawAliasFrameLerp(paliashdr, currententity->backlerp);
 

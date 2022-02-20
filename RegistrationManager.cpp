@@ -356,6 +356,8 @@ model_t* RegistrationManager::FindModel(const char* name, qboolean crash) {
 	return mod;
 }
 
+
+
 FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 
 	FramedModelData result;
@@ -470,17 +472,23 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 			//verticies3[frameIndex].resize(3);
 			vec3_t* ptrverts = &m_vertices[num_xyz * frameIndex];
 			//ptrnormals = &m_lightnormals[num_xyz * frameIndex];
-			verticies3[frameIndex][0] = float3(ptrverts[index1][0], ptrverts[index1][1], ptrverts[index1][2]);
-			verticies3[frameIndex][1] = float3(ptrverts[index2][0], ptrverts[index2][1], ptrverts[index2][2]);
-			verticies3[frameIndex][2] = float3(ptrverts[index3][0], ptrverts[index3][1], ptrverts[index3][2]);
+			int* ptrnormals = &m_lightnormals[num_xyz * frameIndex];
+			verticies3[frameIndex][0].position = float3(ptrverts[index1][0], ptrverts[index1][1], ptrverts[index1][2]);
+			verticies3[frameIndex][1].position = float3(ptrverts[index2][0], ptrverts[index2][1], ptrverts[index2][2]);
+			verticies3[frameIndex][2].position = float3(ptrverts[index3][0], ptrverts[index3][1], ptrverts[index3][2]);
+			
+
+			verticies3[frameIndex][0].normal = float3(r_avertexnormals[ptrnormals[index1]]);
+			verticies3[frameIndex][1].normal = float3(r_avertexnormals[ptrnormals[index2]]);
+			verticies3[frameIndex][2].normal = float3(r_avertexnormals[ptrnormals[index3]]);
 		}
 
-		FramedModelVertex uvNormals[3];
+		FramedModelCommon uvs[3];
 
 		//float2 WH = float2(frameSkins[0].m_texid->width, frameSkins[0].m_texid->height);
-		uvNormals[0].texcoord = float2(uvCoordinates[triangles[i].index_st[0]].s, uvCoordinates[triangles[i].index_st[0]].t);
-		uvNormals[1].texcoord = float2(uvCoordinates[triangles[i].index_st[1]].s, uvCoordinates[triangles[i].index_st[1]].t);
-		uvNormals[2].texcoord = float2(uvCoordinates[triangles[i].index_st[2]].s, uvCoordinates[triangles[i].index_st[2]].t);
+		uvs[0].texcoord = float2(uvCoordinates[triangles[i].index_st[0]].s, uvCoordinates[triangles[i].index_st[0]].t);
+		uvs[1].texcoord = float2(uvCoordinates[triangles[i].index_st[1]].s, uvCoordinates[triangles[i].index_st[1]].t);
+		uvs[2].texcoord = float2(uvCoordinates[triangles[i].index_st[2]].s, uvCoordinates[triangles[i].index_st[2]].t);
 
 		//uvNormals[1]->s = pstverts[ptri->index_st[1]].s << 16;
 		//uvNormals[1]->t = pstverts[ptri->index_st[1]].t << 16;
@@ -488,7 +496,7 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 		//uvNormals[2]->s = pstverts[ptri->index_st[2]].s << 16;
 		//uvNormals[2]->t = pstverts[ptri->index_st[2]].t << 16;
 
-		result.AddTriangle(verticies3, uvNormals);
+		result.AddTriangle(verticies3, uvs);
 	}
 
 

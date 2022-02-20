@@ -48,6 +48,7 @@
     <ClCompile Include="dx11rg_light.cpp" />
     <ClCompile Include="dx11rg_reg.cpp" />
     <ClCompile Include="dx11rg_warp.cpp" />
+    <ClCompile Include="lightNormals.cpp" />
     <ClCompile Include="RegistrationManager.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

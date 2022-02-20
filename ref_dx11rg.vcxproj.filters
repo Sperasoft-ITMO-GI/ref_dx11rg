@@ -101,6 +101,9 @@
     <ClCompile Include="dx11rg_light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lightNormals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\baseq2\BSPShader.hlsl">

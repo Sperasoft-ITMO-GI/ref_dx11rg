@@ -18,6 +18,9 @@ extern RegistrationManager RM;
 
 class RegistrationManager {
 
+#define NUMVERTEXNORMALS	162
+
+	static float r_avertexnormals[NUMVERTEXNORMALS][3];
 
 	std::array<image_t*, MAX_DXTEXTURES> dxTextures; 
 	std::array<model_t*, MAX_MOD_KNOWN> dxModels;
