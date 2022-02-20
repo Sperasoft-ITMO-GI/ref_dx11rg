@@ -481,6 +481,10 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 			verticies3[frameIndex][0].normal = float3(r_avertexnormals[ptrnormals[index1]]);
 			verticies3[frameIndex][1].normal = float3(r_avertexnormals[ptrnormals[index2]]);
 			verticies3[frameIndex][2].normal = float3(r_avertexnormals[ptrnormals[index3]]);
+
+			//verticies3[frameIndex][0].normalDot = (shadedots[ptrnormals[index1]]);
+			//verticies3[frameIndex][1].normalDot = (shadedots[ptrnormals[index2]]);
+			//verticies3[frameIndex][2].normalDot = (shadedots[ptrnormals[index3]]);
 		}
 
 		FramedModelCommon uvs[3];

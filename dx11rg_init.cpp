@@ -81,6 +81,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 	gl_picmip = ri.Cvar_Get("gl_picmip", "0", 0);
 	gl_skymip = ri.Cvar_Get("gl_skymip", "0", 0);
+	r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
 
 	// init intensity conversions
 	//intensity = ri.Cvar_Get("intensity", "2", 0);

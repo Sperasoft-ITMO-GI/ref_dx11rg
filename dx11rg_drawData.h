@@ -126,7 +126,7 @@ void EmitWaterPolys(msurface_t* fa);
 
 
 
-
+void R_LightPoint(vec3_t p, vec3_t color);
 void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
 void R_ClearSkyBox(void);
 void R_MarkLeaves();

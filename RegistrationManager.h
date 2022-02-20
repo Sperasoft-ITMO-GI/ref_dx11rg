@@ -22,6 +22,10 @@ class RegistrationManager {
 
 	static float r_avertexnormals[NUMVERTEXNORMALS][3];
 
+#define SHADEDOT_QUANT 16
+	static float	r_avertexnormal_dots[SHADEDOT_QUANT][256];
+	static float*   shadedots;
+
 	std::array<image_t*, MAX_DXTEXTURES> dxTextures; 
 	std::array<model_t*, MAX_MOD_KNOWN> dxModels;
 	model_t	mod_inline[MAX_MOD_KNOWN];

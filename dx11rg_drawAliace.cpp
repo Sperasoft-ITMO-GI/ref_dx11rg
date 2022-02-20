@@ -82,22 +82,12 @@ void R_DrawAliasModel(entity_t* e) {
 			}
 		}
 	}
-	//PMM - ok, now flatten these down to range from 0 to 1.0.
-//		max_shell_val = max(shadelight[0], max(shadelight[1], shadelight[2]));
-//		if (max_shell_val > 0)
-//		{
-//			for (i=0; i<3; i++)
-//			{
-//				shadelight[i] = shadelight[i] / max_shell_val;
-//			}
-//		}
-// pmm
 	else if (currententity->flags & RF_FULLBRIGHT) {
 		for (i = 0; i < 3; i++)
 			shadelight[i] = 1.0;
 	}
 	else {
-		//R_LightPoint(currententity->origin, shadelight); //TODO
+		R_LightPoint(currententity->origin, shadelight);
 
 		// player lighting hack for communication back to server
 		// big hack!
@@ -105,22 +95,21 @@ void R_DrawAliasModel(entity_t* e) {
 			// pick the greatest component, which should be the same
 			// as the mono value returned by software
 			if (shadelight[0] > shadelight[1]) {
-				//if (shadelight[0] > shadelight[2])
-				//	r_lightlevel->value = 150 * shadelight[0];
-				//else
-				//	r_lightlevel->value = 150 * shadelight[2];
+				if (shadelight[0] > shadelight[2])
+					r_lightlevel->value = 150 * shadelight[0];
+				else
+					r_lightlevel->value = 150 * shadelight[2];
 			}
 			else {
-				// if (shadelight[1] > shadelight[2])
-				// 	r_lightlevel->value = 150 * shadelight[1];
-				// else
-				// 	r_lightlevel->value = 150 * shadelight[2];
+				if (shadelight[1] > shadelight[2])
+					r_lightlevel->value = 150 * shadelight[1];
+				else
+					r_lightlevel->value = 150 * shadelight[2];
 			}
 
 		}
 
-		/*if (gl_monolightmap->string[0] != '0')
-		{
+		if (false/*gl_monolightmap->string[0] != '0'*/) {
 			float s = shadelight[0];
 
 			if (s < shadelight[1])
@@ -131,7 +120,7 @@ void R_DrawAliasModel(entity_t* e) {
 			shadelight[0] = s;
 			shadelight[1] = s;
 			shadelight[2] = s;
-		}*/
+		}
 	}
 
 	if (currententity->flags & RF_MINLIGHT) {
@@ -182,30 +171,7 @@ void R_DrawAliasModel(entity_t* e) {
 
 	c_alias_polys += currentmodel->num_tris;
 
-	//
-	// draw all the triangles
-	//
-	//if (currententity->flags & RF_DEPTHHACK) // hack the depth range to prevent view model from poking into walls
-	//	qglDepthRange(gldepthmin, gldepthmin + 0.3 * (gldepthmax - gldepthmin));
 
-	//if ((currententity->flags & RF_WEAPONMODEL) && (r_lefthand->value == 1.0F))
-	//{
-	//	extern void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-
-	//	qglMatrixMode(GL_PROJECTION);
-	//	qglPushMatrix();
-	//	qglLoadIdentity();
-	//	qglScalef(-1, 1, 1);
-	//	MYgluPerspective(r_newrefdef.fov_y, (float)r_newrefdef.width / r_newrefdef.height, 4, 4096);
-	//	qglMatrixMode(GL_MODELVIEW);
-
-	//	qglCullFace(GL_BACK);
-	//}
-
-	//qglPushMatrix();
-	//e->angles[PITCH] = -e->angles[PITCH];	// sigh.
-	//R_RotateForEntity(e);
-	//e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 
 	// select skin
 	if (currententity->skin)
@@ -265,7 +231,7 @@ void R_DrawAliasModel(entity_t* e) {
 	LerpModelDrawData data = { R_RotateForEntity(e), 
 		currentmodel->num_frames == 1,
 		currententity->backlerp, currententity->oldframe, currententity->frame, float4(),
-		MBAD_UV | MCOLORED };
+		MBAD_UV | MLIGHTED };
 	
 	if (currentmodel->num_frames != 1) {
 		data.flags |= MLERP;
@@ -276,8 +242,7 @@ void R_DrawAliasModel(entity_t* e) {
 		alpha = currententity->alpha;
 	else
 		alpha = 1.0;
-
-	data.color = float4(shadelight[0], shadelight[1], shadelight[2], alpha);
+	data.color = float4(shadelight[0], shadelight[1], shadelight[2], alpha) * float4(colorBuf);
 
 	if (currententity->flags & (RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE)) {
 		data.flags |= MNONORMAL;
@@ -342,4 +307,8 @@ void R_DrawAliasModel(entity_t* e) {
 	}
 #endif
 	qglColor4f(1, 1, 1, 1);*/
+	colorBuf[0] = 1.0f;
+	colorBuf[1] = 1.0f;
+	colorBuf[2] = 1.0f;
+	colorBuf[3] = 1.0f;
 }
