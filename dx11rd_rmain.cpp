@@ -29,7 +29,9 @@ void R_BeginFrame(float camera_separation) {
 */
 void GLimp_EndFrame(void) {
 	RD.Clear(0,0, 0);
-	RD.Present();
+	while (!RD.Present()) {
+		ReloadShaders();
+	};
 
 	return;
 }
