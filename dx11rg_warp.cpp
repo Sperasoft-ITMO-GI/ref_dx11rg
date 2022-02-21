@@ -100,7 +100,7 @@ void SubdividePolygon(int numverts, float* verts) {
 
 	// add a point in the center to help keep warp valid
 	poly = (glpoly_t*)Hunk_Alloc(sizeof(glpoly_t) + ((numverts - 4) + 2) * VERTEXSIZE * sizeof(float));
-	poly->savedData = UPHashData{ -1,-1,-1 };
+	poly->savedData = MeshHashData{ -1,-1,-1 };
 	poly->next = warpface->polys;
 	warpface->polys = poly;
 	poly->numverts = numverts + 2;
@@ -234,11 +234,11 @@ void EmitWaterPolys(msurface_t* fa) {
 		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLESTRIP,
 			p->numverts - 2, vect,indexes };
 
-		UPDrawData data = { Transform() , float2{0,0}, float4{ colorBuf }, UPALPHA };
+		UPDrawData data = { Transform() , float2{0,0}, float4{ colorBuf }, true, UPALPHA };
 
 
 		if (p->savedData.indexOffset == -1) {
-			p->savedData = RD.RegisterUserPolygon(model);
+			p->savedData = RD.RegisterUserPolygon(model, true);
 		}
 
 		//RD.DrawSetUserPolygon(data, model, fa->texinfo->image->texnum);

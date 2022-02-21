@@ -135,13 +135,13 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 		SmartTriangulation(&indexes, p->numverts);
 
 		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-			p->numverts - 2,vect, indexes };
+			p->numverts - 2, vect, indexes };
 
 
-		p->savedData = RD.RegisterUserPolygon(model);
+		p->savedData = RD.RegisterUserPolygon(model, false);
 	}
 
-	UPDrawData data = { hashedTransform , texOffsets, float4{ colorBuf }, defines };
+	UPDrawData data = { hashedTransform , texOffsets, float4{ colorBuf }, false, defines };
 	if (lightTex == -1)
 
 		RD.DrawUserPolygon(p->savedData, texNum, data);
@@ -720,7 +720,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 			//
 			//	/*renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 			//		(unsigned char*)temp, dx11_state.lightmap_textures + 0);
-			RD.UpdateTexture(2*lightmap_textures + lightmapTex, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
+			RD.UpdateTexture(2 * lightmap_textures + lightmapTex, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
 			lightmapTex++;
 			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
 			//	(unsigned char*)temp, lightmap_textures + 0);
@@ -1427,7 +1427,7 @@ void GL_BuildPolygonFromSurface(msurface_t* fa) {
 	poly = (glpoly_t*)Hunk_Alloc(sizeof(glpoly_t) + (lnumverts - 4) * VERTEXSIZE * sizeof(float));
 	poly->next = fa->polys;
 	poly->flags = fa->flags;
-	poly->savedData = UPHashData{ -1,-1,-1 };
+	poly->savedData = MeshHashData{ -1,-1,-1 };
 	fa->polys = poly;
 	poly->numverts = lnumverts;
 
