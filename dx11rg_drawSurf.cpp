@@ -649,7 +649,7 @@ void DrawTextureChains(void) {
 
 size_t lightmapTex = 0;
 
-static void GL_RenderLightmappedPoly(msurface_t* surf) {
+static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 	int		i, nv = surf->polys->numverts;
 	int		map;
 	float* v;
@@ -742,12 +742,12 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 				scroll = -64.0;
 
 			for (p = surf->polys; p; p = p->chain) {
-				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ scroll , 0 }, lmtex);
+				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ scroll , 0 }, lmtex);
 			}
 		}
 		else {
 			for (p = surf->polys; p; p = p->chain) {
-				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ 0 , 0 }, lmtex);
+				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ 0 , 0 }, lmtex);
 			}
 		}
 		//PGM
@@ -772,39 +772,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 			for (p = surf->polys; p; p = p->chain) {
 
 
-				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ scroll , 0 }, lightmap_textures + surf->lightmaptexturenum);
+				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ scroll , 0 }, lightmap_textures + surf->lightmaptexturenum);
 
-				//UPVertex vert = {};
-				//std::vector<UPVertex> vect;
-				//
-				//v = p->verts[0];
-				////qglBegin(GL_POLYGON);
-				//for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-				//	//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, (v[3] + scroll), v[4]);
-				//	//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-				//	//qglVertex3fv(v);
-				//
-				//	vert.position.x = v[0];
-				//	vert.position.y = v[1];
-				//	vert.position.z = v[2];
-				//	vert.texcoord.x = v[3] + scroll;
-				//	vert.texcoord.y = v[4];
-				//	vert.lightTexcoord.x = v[5];
-				//	vert.lightTexcoord.y = v[6];
-				//
-				//	vect.push_back(vert);
-				//}
-				//
-				//std::vector<uint16_t> indexes;
-				//
-				//SmartTriangulation(&indexes, nv);
-				//
-				//
-				//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-				//	p->numverts - 2,vect,indexes };
-				//
-				//RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
-				//qglEnd();
 			}
 		}
 		else {
@@ -812,37 +781,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf) {
 			//==========
 			for (p = surf->polys; p; p = p->chain) {
 
-				DrawGLPoly(p, image->texnum, UPLIGHTMAPPED, float2{ 0 , 0 }, lightmap_textures + surf->lightmaptexturenum);
-				//UPVertex vert = {};
-				//std::vector<UPVertex> vect;
-				//
-				//v = p->verts[0];
-				////qglBegin(GL_POLYGON);
-				//for (i = 0; i < nv; i++, v += VERTEXSIZE) {
-				//	//qglMTexCoord2fSGIS(GL_TEXTURE0_SGIS, v[3], v[4]);
-				//	//qglMTexCoord2fSGIS(GL_TEXTURE1_SGIS, v[5], v[6]);
-				//	//qglVertex3fv(v);
-				//
-				//	vert.position.x = v[0];
-				//	vert.position.y = v[1];
-				//	vert.position.z = v[2];
-				//	vert.texcoord.x = v[3];
-				//	vert.texcoord.y = v[4];
-				//	vert.lightTexcoord.x = v[5];
-				//	vert.lightTexcoord.y = v[6];
-				//
-				//	vect.push_back(vert);
-				//}
-				//
-				//std::vector<uint16_t> indexes;
-				//
-				//SmartTriangulation(&indexes, nv);
-				//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-				//	p->numverts - 1,vect,indexes };
-				//
-				////RD.DrawUserPolygon(model, image->texnum, Transform(), float4{ colorBuf },| UPRED);//BSP_LIGHTMAPPEDPOLY
-				//
-				////qglEnd();
+				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ 0 , 0 }, lightmap_textures + surf->lightmaptexturenum);
+
 			}
 			//==========
 			//PGM
@@ -882,6 +822,13 @@ void R_DrawInlineBModel(void) {
 		colorBuf[2] = 1.0f;
 		colorBuf[3] = 0.25f;
 	}
+	else {
+		//qglColor4f(1, 1, 1, 1);
+		colorBuf[0] = 1.0f;
+		colorBuf[1] = 1.0f;
+		colorBuf[2] = 1.0f;
+		colorBuf[3] = 1.0f;
+	}
 
 	//
 	// draw texture
@@ -900,7 +847,10 @@ void R_DrawInlineBModel(void) {
 				r_alpha_surfaces = psurf;
 			}
 			else if (multiTexture && !(psurf->flags & SURF_DRAWTURB)) {
-				GL_RenderLightmappedPoly(psurf);
+				if (currententity->flags & RF_TRANSLUCENT)
+					GL_RenderLightmappedPoly(psurf, UPALPHA);
+				else
+					GL_RenderLightmappedPoly(psurf, 0);
 			}
 			else {
 				//GL_EnableMultitexture(False);
@@ -1111,7 +1061,7 @@ void R_RecursiveWorldNode(mnode_t* node) {
 		}
 		else {
 			if (multiTexture && !(surf->flags & SURF_DRAWTURB)) {
-				GL_RenderLightmappedPoly(surf);
+				GL_RenderLightmappedPoly(surf, 0);
 			}
 			else {
 				// the polygon is visible, so add it to the texture

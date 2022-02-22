@@ -352,7 +352,7 @@ model_t* RegistrationManager::FindModel(const char* name, qboolean crash) {
 		break;
 	}
 
-	//loadmodel->extradatasize = Hunk_End();
+	loadmodel->extradatasize = Hunk_End();
 
 	ri.FS_FreeFile(buf);
 

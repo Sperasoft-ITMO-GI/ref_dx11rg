@@ -23,7 +23,12 @@ void Draw_Char(int x, int y, int num) {
 	fcol = col * 0.0625;
 	size = 0.0625;
 
-	RD.DrawImg(RM.draw_chars->texnum, col*8, row*8, 8, 8, x, y, 8, 8, 0);
+	UIDrawData data{ x, y, 8, 8,
+	col * 8, row * 8, 8, 8,
+	float4(0.0f, 0.0f, 0.0f, 0.8f),
+	UICHAR | UISCALED };
+
+	RD.DrawImg(RM.draw_chars->texnum, data);
 }
 
 /*
@@ -56,8 +61,12 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic) {
 		ri.Con_Printf(PRINT_ALL, "Can't find pic: %s\n", pic);
 		return;
 	}
+	UIDrawData data{ x, std::min(y,0), w, h,
+	0,0,0,0,
+	float4(),
+	0 };
 
-	RD.DrawImg(gl->texnum, x, y, gl->width, gl->height, 0);
+	RD.DrawImg(gl->texnum, data);
 }
 
 
@@ -75,7 +84,12 @@ void Draw_Pic(int x, int y, char* pic) {
 		return;
 	}
 
-	RD.DrawImg(gl->texnum, x, y, gl->width, gl->height, 0);
+	UIDrawData data{ x, y, gl->width, gl->height,
+	0,0,0,0,
+	float4(),
+	0 };
+
+	RD.DrawImg(gl->texnum, data);
 }
 
 /*
@@ -94,7 +108,12 @@ void Draw_TileClear(int x, int y, int w, int h, char* pic) {
 		ri.Con_Printf(PRINT_ALL, "Can't find pic: %s\n", pic);
 		return;
 	}
-	RD.DrawImg(image->texnum, x, y, w, h, 0);
+
+	UIDrawData drawData{ x, y, w, h,
+	0,0,0,0,
+	float4(),
+	0 };
+	RD.DrawImg(image->texnum, drawData);
 
 }
 
@@ -108,7 +127,11 @@ Fills a box of pixels with a single color
 void Draw_Fill(int x, int y, int w, int h, int c) {
 
 	TextureData::Color cb = TextureData::Color(RM.d_8to24table[c]);
-	RD.DrawColor(cb.ToFloat4(), x, y, w, h, 0);
+	UIDrawData data{ x, y, w, h,
+	0,0,0,0,
+	float4(cb.ToFloat4()),
+	UICOLORED };
+	RD.DrawColor(data);
 
 	//TODO
 }
@@ -123,7 +146,11 @@ void Draw_FadeScreen(void) {
 
 	//
 	//auto c = { 0.0f, 0.0f, 0.0f, 0.8f };
-	RD.DrawColor({ 0.0f, 0.0f, 0.0f, 0.8f }, 0, 0, windowState.width, windowState.height, 0);
+	UIDrawData data{ 0, 0, windowState.width, windowState.height,
+	0,0,0,0,
+	float4(0.0f, 0.0f, 0.0f, 0.8f),
+	UICOLORED };
+	RD.DrawColor(data);
 	//TODO
 }
 
@@ -146,7 +173,8 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	if (rows <= 256) {
 		hscale = 1;
 		trows = rows;
-	} else {
+	}
+	else {
 		hscale = rows / 256.0;
 		trows = 256;
 	}
@@ -178,7 +206,15 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 			tex.PutPixel(w, h, image32[h * 256 + w]);
 		}
 	}
+
 	RD.UpdateTexture(1300, tex);
-	RD.DrawImg(1300, x, y, windowState.width, windowState.height, 0);
+
+
+	UIDrawData drawData{ x, y, windowState.width, windowState.height,
+	0,0,0,0,
+	float4(),
+	0 };
+
+	RD.DrawImg(1300, drawData);
 
 }
