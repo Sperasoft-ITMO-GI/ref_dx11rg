@@ -172,6 +172,8 @@ void RegistrationManager::EndRegistration() {
 			continue;
 		if (mod->registration_sequence != registration_sequence) {	// don't need this model
 			delete[] (mod->skins);
+			if (mod->extradata != nullptr)
+				Hunk_Free(mod->extradata);
 			memset(mod, 0, sizeof(*mod));
 		}
 	}
@@ -195,6 +197,7 @@ void RegistrationManager::EndRegistration() {
 		RD.ReleaseTexture(dxTextures[i]->texnum);
 		dxTextures[i]->texnum = -1;
 	}
+	RD.Flush();
 }
 
 image_t* RegistrationManager::FindImage(const char* name, imagetype_t type) {
