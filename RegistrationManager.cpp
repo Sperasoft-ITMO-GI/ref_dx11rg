@@ -273,13 +273,13 @@ model_t* RegistrationManager::FindModel(const char* name, qboolean crash) {
 
 	//
 	// inline models are grabbed only from worldmodel
-	//
-	//if (name[0] == '*') {
-	//	i = atoi(name + 1);
-	//	if (i < 1 || !r_worldmodel || i >= r_worldmodel->numsubmodels)
-	//		ri.Sys_Error(ERR_DROP, "bad inline model number");
-	//	return &mod_inline[i];
-	//}
+	
+	if (name[0] == '*') {
+		i = atoi(name + 1);
+		if (i < 1 || !r_worldmodel || i >= r_worldmodel->numsubmodels)
+			ri.Sys_Error(ERR_DROP, "bad inline model number");
+		return &mod_inline[i];
+	}
 
 	//
 	// search the currently loaded models
