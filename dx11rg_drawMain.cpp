@@ -117,7 +117,7 @@ void R_RenderFrame(refdef_t* fd) {
 	//
 	R_DrawAlphaSurfaces();
 	//
-	//R_Flash();
+	R_Flash();
 	//
 	//if (r_speeds->value) {
 	//	ri.Con_Printf(PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
@@ -387,6 +387,17 @@ void R_DrawParticles(void) {
 	RD.DrawParticles(particles, data);
 
 }
+
+
+void  R_Flash() {
+	if (!v_blend[3])
+		return;
+	UIDrawData data{ 0, 0, windowState.width, windowState.height,
+	0,0,0,0,
+	float4(v_blend),
+	UICOLORED };
+	RD.DrawColor(data);
+};
 
 matrix R_RotateForEntity(entity_t* e, bool lerped ) {
 	matrix result = matrix::CreateTranslation(0, 0, 0);
