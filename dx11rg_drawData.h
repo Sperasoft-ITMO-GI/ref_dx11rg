@@ -116,6 +116,7 @@ void R_SetupDX(void);
 
 void R_DrawEntitiesOnList(void);
 /* Models drawing */
+
 void R_DrawEntitiesOnList();
 void R_DrawWorld(void);
 void R_DrawAliasModel(entity_t* e);
@@ -124,7 +125,7 @@ void R_DrawBrushModel(entity_t* e);
 void EmitWaterPolys(msurface_t* fa);
 
 
-
+void R_DrawParticles(void);
 
 void R_LightPoint(vec3_t p, vec3_t color);
 void R_MarkLights(dlight_t* light, int bit, mnode_t* node);

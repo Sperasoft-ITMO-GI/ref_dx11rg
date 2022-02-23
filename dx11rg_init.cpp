@@ -120,6 +120,14 @@ void ReloadShaders() {
 		RD.ReloadShader(shD);
 		ri.FS_FreeFile(shD.data);
 	}
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::ParticlesShader;
+		shD.dataSize = ri.FS_LoadFile("ParticlesShader.hlsl", (void**)&shD.data);
+
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
 }
 
 void R_Shutdown(void) {

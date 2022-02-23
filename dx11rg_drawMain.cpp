@@ -113,7 +113,7 @@ void R_RenderFrame(refdef_t* fd) {
 	//
 	R_RenderDlights();
 	//
-	//R_DrawParticles();
+	R_DrawParticles();
 	//
 	R_DrawAlphaSurfaces();
 	//
@@ -147,36 +147,6 @@ void R_SetupFrame(void) {
 	VectorCopy(r_newrefdef.vieworg, r_origin);
 
 	AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
-
-	// current viewcluster
-	//if (!(r_newrefdef.rdflags & RDF_NOWORLDMODEL)) {
-	//	r_oldviewcluster = r_viewcluster;
-	//	r_oldviewcluster2 = r_viewcluster2;
-	//	leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
-	//	r_viewcluster = r_viewcluster2 = leaf->cluster;
-	//
-	//	// check above and below so crossing solid water doesn't draw wrong
-	//	if (!leaf->contents) {	// look down a bit
-	//		vec3_t	temp;
-	//
-	//		VectorCopy(r_origin, temp);
-	//		temp[2] -= 16;
-	//		leaf = Mod_PointInLeaf(temp, r_worldmodel);
-	//		if (!(leaf->contents & CONTENTS_SOLID) &&
-	//			(leaf->cluster != r_viewcluster2))
-	//			r_viewcluster2 = leaf->cluster;
-	//	}
-	//	else {	// look up a bit
-	//		vec3_t	temp;
-	//
-	//		VectorCopy(r_origin, temp);
-	//		temp[2] += 16;
-	//		leaf = Mod_PointInLeaf(temp, r_worldmodel);
-	//		if (!(leaf->contents & CONTENTS_SOLID) &&
-	//			(leaf->cluster != r_viewcluster2))
-	//			r_viewcluster2 = leaf->cluster;
-	//	}
-	//}
 
 	for (i = 0; i < 4; i++)
 		v_blend[i] = r_newrefdef.blend[i];
@@ -391,6 +361,32 @@ void R_DrawEntitiesOnList(void) {
 
 }
 
+
+void R_DrawParticles(void) {
+	int i;
+	unsigned char color[4];
+	const particle_t* p;
+
+	ParticlesMesh particles;
+	ParticleVertex particle;
+	particles.pt = Renderer::PRIMITIVETYPE_POINTLIST_EXT;
+	particles.primitiveCount = r_newrefdef.num_particles;
+	for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++) {
+
+		*(int*)color = RM.d_8to24table[p->color];
+		color[3] = p->alpha * 255;
+
+		particle.color = float4(color[0], color[1], color[2],  color[3] )/255;
+		particle.position = { p->origin[0], p->origin[1], p->origin[2] };
+		particles.vertixes.push_back(particle);
+		particles.indexes.push_back(i);
+
+	}
+	ParticlesDrawData data;
+	data.flags = 0;
+	RD.DrawParticles(particles, data);
+
+}
 
 matrix R_RotateForEntity(entity_t* e, bool lerped ) {
 	matrix result = matrix::CreateTranslation(0, 0, 0);

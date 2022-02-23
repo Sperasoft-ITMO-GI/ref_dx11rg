@@ -61,7 +61,7 @@ void Draw_StretchPic(int x, int y, int w, int h, char* pic) {
 		ri.Con_Printf(PRINT_ALL, "Can't find pic: %s\n", pic);
 		return;
 	}
-	UIDrawData data{ x, std::min(y,0), w, h,
+	UIDrawData data{ x, y, w, h,
 	0,0,0,0,
 	float4(),
 	0 };
