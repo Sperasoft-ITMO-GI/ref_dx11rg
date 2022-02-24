@@ -89,10 +89,10 @@ void R_RenderFrame(refdef_t* fd) {
 	//if (!r_worldmodel && !(r_newrefdef.rdflags & RDF_NOWORLDMODEL))
 	//	ri.Sys_Error(ERR_DROP, "R_RenderView: NULL worldmodel");
 	
-	//if (r_speeds->value) {
-	//	c_brush_polys = 0;
-	//	c_alias_polys = 0;
-	//}
+	if (r_speeds->value) {
+		c_brush_polys = 0;
+		c_alias_polys = 0;
+	}
 	
 	R_PushDlights();
 	
@@ -139,7 +139,7 @@ R_SetupFrame
 */
 void R_SetupFrame(void) {
 	int i;
-	//mleaf_t* leaf;
+	mleaf_t* leaf;
 
 	r_framecount++;
 
@@ -147,6 +147,36 @@ void R_SetupFrame(void) {
 	VectorCopy(r_newrefdef.vieworg, r_origin);
 
 	AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
+
+	if (!(r_newrefdef.rdflags & RDF_NOWORLDMODEL)) {
+		r_oldviewcluster = r_viewcluster;
+		r_oldviewcluster2 = r_viewcluster2;
+		leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
+		r_viewcluster = r_viewcluster2 = leaf->cluster;
+
+		// check above and below so crossing solid water doesn't draw wrong
+		if (!leaf->contents) {	// look down a bit
+			vec3_t	temp;
+
+			VectorCopy(r_origin, temp);
+			temp[2] -= 16;
+			leaf = Mod_PointInLeaf(temp, r_worldmodel);
+			if (!(leaf->contents & CONTENTS_SOLID) &&
+				(leaf->cluster != r_viewcluster2))
+				r_viewcluster2 = leaf->cluster;
+		}
+		else {	// look up a bit
+			vec3_t	temp;
+
+			VectorCopy(r_origin, temp);
+			temp[2] += 16;
+			leaf = Mod_PointInLeaf(temp, r_worldmodel);
+			if (!(leaf->contents & CONTENTS_SOLID) &&
+				(leaf->cluster != r_viewcluster2))
+				r_viewcluster2 = leaf->cluster;
+		}
+	}
+
 
 	for (i = 0; i < 4; i++)
 		v_blend[i] = r_newrefdef.blend[i];

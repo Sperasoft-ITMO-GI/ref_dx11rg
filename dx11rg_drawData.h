@@ -142,3 +142,4 @@ void GL_CreateSurfaceLightmap(msurface_t* surf);
 void GL_EndBuildingLightmaps(void);
 void GL_BeginBuildingLightmaps(model_t* m);
 void GL_SubdivideSurface(msurface_t* fa);
+mleaf_t* Mod_PointInLeaf(float* p, model_t* model);
