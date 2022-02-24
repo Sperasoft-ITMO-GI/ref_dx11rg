@@ -99,7 +99,7 @@ void RegistrationManager::BeginRegistration(const char* map) {
 	if (strcmp(dxModels[0]->name, fullname) || flushmap->value)
 		Mod_Free(dxModels[0]);
 	r_worldmodel = FindModel(fullname, True);
-	
+	r_worldmodel->firstFrame = true;
 	r_viewcluster = -1;
 }
 

@@ -258,6 +258,7 @@ typedef struct model_s {
 	int num_skins;
 	skinInfo* skins;
 	int num_tris;
+	bool firstFrame;
 
 	int			extradatasize;
 	void* extradata;

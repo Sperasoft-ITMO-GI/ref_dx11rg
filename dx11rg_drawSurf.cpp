@@ -995,7 +995,7 @@ void R_RecursiveWorldNode(mnode_t* node) {
 
 		// check for door connected areas
 		if (r_newrefdef.areabits) {
-			if (!(r_newrefdef.areabits[pleaf->area >> 3] & (1 << (pleaf->area & 7))))
+			if (!(r_newrefdef.areabits[pleaf->area >> 3] & (1 << (pleaf->area & 7))) && (!r_worldmodel->firstFrame))
 				return;		// not visible
 		}
 
@@ -1122,12 +1122,13 @@ void R_DrawWorld(void) {
 		R_RecursiveWorldNode(r_worldmodel->nodes);
 	}
 
+	r_worldmodel->firstFrame = false;
 	/*
 	** theoretically nothing should happen in the next two functions
 	** if multitexture is enabled
 	*/
-	//DrawTextureChains();
-	//R_BlendLightmaps();
+	DrawTextureChains();
+	R_BlendLightmaps();
 
 	//R_DrawSkyBox();
 
@@ -1279,9 +1280,6 @@ static void LM_UploadBlock(qboolean dynamic) {
 		texture = gl_lms.current_lightmap_texture;
 	}
 
-	//GL_Bind(dx11_state.lightmap_textures + texture);
-	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	if (dynamic) {
 		int i;
@@ -1292,27 +1290,10 @@ static void LM_UploadBlock(qboolean dynamic) {
 		}
 		RD.UpdateTexture(lightmap_textures + texture, 0, 0, 32, height, 0,
 			gl_lms.lightmap_buffer);
-		/*qglTexSubImage2D(GL_TEXTURE_2D,
-			0,
-			0, 0,
-			BLOCK_WIDTH, height,
-			GL_LIGHTMAP_FORMAT,
-			GL_UNSIGNED_BYTE,
-			gl_lms.lightmap_buffer);*/
 	}
 	else {
 		RD.RegisterTexture(lightmap_textures + texture, BLOCK_WIDTH, BLOCK_HEIGHT, gl_lms.lightmap_buffer, true);
-		//(, 32,
-		//	gl_lms.lightmap_buffer, , true);
-		/*qglTexImage2D(GL_TEXTURE_2D,
-			0,
-			gl_lms.internal_format,
-			BLOCK_WIDTH, BLOCK_HEIGHT,
-			0,
-			GL_LIGHTMAP_FORMAT,
-			GL_UNSIGNED_BYTE,
-			gl_lms.lightmap_buffer);
-			*/
+
 		if (++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS)
 			ri.Sys_Error(ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n");
 	}
@@ -1508,51 +1489,8 @@ void GL_BeginBuildingLightmaps(model_t* m) {
 	** only alpha lightmaps but that can at least support the GL_ALPHA
 	** format then we should change this code to use real alpha maps.
 	*/
-	/*if (toupper(gl_monolightmap->string[0]) == 'A')
-	{
-		gl_lms.internal_format = gl_tex_alpha_format;
-	}*/
-	/*
-	** try to do hacked colored lighting with a blended texture
-	*/
-	/*else if (toupper(gl_monolightmap->string[0]) == 'C')
-	{
-		gl_lms.internal_format = gl_tex_alpha_format;
-	}
-	else if (toupper(gl_monolightmap->string[0]) == 'I')
-	{
-		gl_lms.internal_format = GL_INTENSITY8;
-	}
-	else if (toupper(gl_monolightmap->string[0]) == 'L')
-	{
-		gl_lms.internal_format = GL_LUMINANCE8;
-	}
-	else
-	{
-		gl_lms.internal_format = gl_tex_solid_format;
-	}
-
-	gl_lms.internal_format = 3;//gl_tex_solid_format;
-
-	//
-	//** initialize the dynamic lightmap texture
-	//
-
-	//GL_Bind(dx11_state.lightmap_textures + 0);
-	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	/*qglTexImage2D(GL_TEXTURE_2D,
-		0,
-		gl_lms.internal_format,
-		BLOCK_WIDTH, BLOCK_HEIGHT,
-		0,
-		GL_LIGHTMAP_FORMAT,
-		GL_UNSIGNED_BYTE,
-		dummy);
-		*/
+	
 	RD.RegisterTexture(lightmap_textures + 0, BLOCK_WIDTH, BLOCK_HEIGHT, dummy, true);
-	//renderer->AddTexturetoSRV(BLOCK_WIDTH, BLOCK_HEIGHT, 32,
-	//	(unsigned char*)dummy, dx11_state.lightmap_textures + 0, true); 
 
 }
 

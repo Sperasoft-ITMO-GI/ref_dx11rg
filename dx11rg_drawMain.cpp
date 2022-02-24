@@ -148,6 +148,7 @@ void R_SetupFrame(void) {
 
 	AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
 
+	if(!r_worldmodel->firstFrame)
 	if (!(r_newrefdef.rdflags & RDF_NOWORLDMODEL)) {
 		r_oldviewcluster = r_viewcluster;
 		r_oldviewcluster2 = r_viewcluster2;
