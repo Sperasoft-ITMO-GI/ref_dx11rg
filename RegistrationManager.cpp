@@ -96,8 +96,10 @@ void RegistrationManager::BeginRegistration(const char* map) {
 	// this guarantees that mod_known[0] is the world map
 	// explicitly free the old map if different
 	flushmap = ri.Cvar_Get("flushmap", "0", 0);
-	if (strcmp(dxModels[0]->name, fullname) || flushmap->value)
+	if (strcmp(dxModels[0]->name, fullname) || flushmap->value) {
 		Mod_Free(dxModels[0]);
+		RD.Flush();
+	}
 	r_worldmodel = FindModel(fullname, True);
 	r_worldmodel->firstFrame = true;
 	r_viewcluster = -1;
@@ -197,7 +199,6 @@ void RegistrationManager::EndRegistration() {
 		RD.ReleaseTexture(dxTextures[i]->texnum);
 		dxTextures[i]->texnum = -1;
 	}
-	RD.Flush();
 }
 
 image_t* RegistrationManager::FindImage(const char* name, imagetype_t type) {
