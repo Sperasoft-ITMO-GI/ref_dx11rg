@@ -527,7 +527,8 @@ R_DrawSkyBox
 */
 int	skytexorder[6] = { 0,2,1,3,4,5 };
 void R_DrawSkyBox(void) {
-	/*
+
+	RD.SetSkyFlags(SKYNOTHING);
 	int		i;
 
 	if (skyrotate) {	// check for no sky at all
@@ -555,24 +556,24 @@ void R_DrawSkyBox(void) {
 
 		//qglBegin(GL_QUADS);
 		using namespace DirectX;
-		sky_renderer->is_exist = true;
+		//sky_renderer->is_exist = true;
 		//IndexBuffer ib({ 2, 1, 0, 0, 3, 2 });
-		ConstantBufferSkyBox cbsb;
+		//ConstantBufferSkyBox cbsb;
 
-		if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0)) {
-			cbsb.position_transform = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
-				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
-				* renderer->GetModelView() * renderer->GetPerspective();
-		}
-		else {
-			printf("POWERNULOS NEBO!!!!\n");
-			cbsb.position_transform = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate))
-				* XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
-				* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
-				* renderer->GetModelView() * renderer->GetPerspective();
-		}
-
-		sky_renderer->Add(cbsb);
+		//if ((skyaxis[0] == 0) && (skyaxis[0] == 0) && (skyaxis[0] == 0)) {
+		//	cbsb.position_transform = XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
+		//		* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
+		//		* renderer->GetModelView() * renderer->GetPerspective();
+		//}
+		//else {
+		//	printf("POWERNULOS NEBO!!!!\n");
+		//	cbsb.position_transform = XMMatrixRotationAxis({ skyaxis[0], skyaxis[1], skyaxis[2] }, XMConvertToRadians(r_newrefdef.time * skyrotate))
+		//		* XMMatrixRotationAxis({ 0.0f, 0.0f, 1.0f }, XMConvertToRadians(-90))
+		//		* XMMatrixTranslation(r_origin[0], r_origin[1], r_origin[2])
+		//		* renderer->GetModelView() * renderer->GetPerspective();
+		//}
+		//
+		//sky_renderer->Add(cbsb);
 
 		//std::vector<SkyVertex> vect;
 		//vect.push_back(MakeSkyVec(skymins[0][i], skymins[1][i], i));
@@ -591,7 +592,8 @@ void R_DrawSkyBox(void) {
 		//sky_renderer->AddElement(sky_quad);
 		//qglEnd();
 	}
-	*/
+
+	RD.SetSkyFlags(SKYZERO);
 }
 
 
@@ -602,9 +604,19 @@ R_SetSky
 */
 // 3dstudio environment map names
 char* suf[6] = { "rt", "bk", "lf", "ft", "up", "dn" };
+//int govno[6] = { 3, 1, 2, 0, 4, 5 };
+			 /*  1, 0   */
+			 /*  2,  , 1, 0         */
+			 /*  3, 1, 0, 2         1 good*/
+			 /*  2, 1, 0, 3, 4, 5    2 good*/
+			 /*  2, 1, 3, 0, 4, 5    3 good*/
+
+
 void R_SetSky(char* name, float rotate, vec3_t axis) {
 	int		i;
 	char	pathname[MAX_QPATH];
+
+
 
 	strncpy(skyname, name, sizeof(skyname) - 1);
 	skyrotate = rotate;
@@ -612,7 +624,7 @@ void R_SetSky(char* name, float rotate, vec3_t axis) {
 
 	//renderer->CreateSkyBoxSRV();
 	//sky_renderer->is_exist = true;
-
+	RM.skySide = 0;
 	for (i = 0; i < 6; i++) {
 		// chop down rotating skies for less memory
 		if (gl_skymip->value || skyrotate)

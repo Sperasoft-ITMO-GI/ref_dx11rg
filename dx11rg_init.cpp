@@ -128,6 +128,14 @@ void ReloadShaders() {
 		RD.ReloadShader(shD);
 		ri.FS_FreeFile(shD.data);
 	}
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::SkyShader;
+		shD.dataSize = ri.FS_LoadFile("SkyShader.hlsl", (void**)&shD.data);
+
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
 }
 
 void R_Shutdown(void) {

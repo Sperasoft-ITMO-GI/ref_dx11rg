@@ -135,7 +135,7 @@ void R_RenderDlights();
 void R_DrawParticles();
 void R_DrawAlphaSurfaces();
 void R_Flash();
-
+void R_DrawSkyBox(void);
 
 void GL_BuildPolygonFromSurface(msurface_t* fa);
 void GL_CreateSurfaceLightmap(msurface_t* surf);

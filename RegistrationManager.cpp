@@ -201,6 +201,8 @@ void RegistrationManager::EndRegistration() {
 	}
 }
 
+
+
 image_t* RegistrationManager::FindImage(const char* name, imagetype_t type) {
 	image_t* image = nullptr;
 	int		i, len;
@@ -241,6 +243,7 @@ image_t* RegistrationManager::FindImage(const char* name, imagetype_t type) {
 		if (!pic)
 			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
 		image = LoadPic((char*)name, pic, width, height, type, 32);
+
 	}
 	else
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
@@ -1216,53 +1219,6 @@ TextureData  RegistrationManager::GL_Upload32(uint32_t* data, int width, int hei
 		}
 	}
 
-	//if (samples == gl_solid_format)
-	//	comp = gl_tex_solid_format;
-	//else if (samples == gl_alpha_format)
-	//	comp = gl_tex_alpha_format;
-	//else {
-	//	ri.Con_Printf(PRINT_ALL,
-	//		"Unknown number of texture components %i\n",
-	//		samples);
-	//	comp = samples;
-	//}
-
-
-	//if (scaled_width == width && scaled_height == height) {
-	//
-	//	Texture tex = Texture(scaled_width, scaled_height);
-	//	for (size_t w = 0; w < scaled_width; w++) {
-	//		for (size_t h = 0; h < scaled_height; h++) {
-	//			tex.PutPixel(w, h, data[w + h * scaled_width]);
-	//		}
-	//	}
-	//	return tex;
-	//	//qglTexImage2D(GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	//
-	//
-	////memcpy(scaled, data, width * height * 4);
-	//} else
-	//	GL_ResampleTexture(data, width, height, scaled, scaled_width, scaled_height);
-	//
-	//GL_LightScaleTexture(scaled, scaled_width, scaled_height, !mipmap);
-
-	//if (qglColorTableEXT && gl_ext_palettedtexture->value && (samples == gl_solid_format)) {
-	//	uploaded_paletted = True;
-	//	GL_BuildPalettedTexture(paletted_texture, (unsigned char*)scaled, scaled_width, scaled_height);
-	//	qglTexImage2D(GL_TEXTURE_2D,
-	//		0,
-	//		GL_COLOR_INDEX8_EXT,
-	//		scaled_width,
-	//		scaled_height,
-	//		0,
-	//		GL_COLOR_INDEX,
-	//		GL_UNSIGNED_BYTE,
-	//		paletted_texture);
-	//} else {
-	//	qglTexImage2D(GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-	//}
-
-
 	TextureData tex = TextureData(width, height);
 	for (size_t w = 0; w < width; w++) {
 		for (size_t h = 0; h < height; h++) {
@@ -1272,7 +1228,6 @@ TextureData  RegistrationManager::GL_Upload32(uint32_t* data, int width, int hei
 			c.SetR(c.GetB());
 			c.SetB(b);
 			tex.PutPixel(w, h, data[w + h * width]);
-			//tex.PutPixel(w, h, data[w + h*width]);
 		}
 	}
 	return tex;
@@ -1359,6 +1314,10 @@ image_t* RegistrationManager::LoadPic(char* name, byte* pic, int width, int heig
 		image->sh = 1;
 		image->tl = 0;
 		image->th = 1;
+		if (type == it_sky) {
+			RD.SetSky(sideSequence[skySide], tex);
+			skySide++;
+		}
 		RD.RegisterTexture(i, tex);
 	}
 

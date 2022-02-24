@@ -24,9 +24,9 @@ class RegistrationManager {
 
 #define SHADEDOT_QUANT 16
 	static float	r_avertexnormal_dots[SHADEDOT_QUANT][256];
-	static float*   shadedots;
+	static float* shadedots;
 
-	std::array<image_t*, MAX_DXTEXTURES> dxTextures; 
+	std::array<image_t*, MAX_DXTEXTURES> dxTextures;
 	std::array<model_t*, MAX_MOD_KNOWN> dxModels;
 	model_t	mod_inline[MAX_MOD_KNOWN];
 
@@ -45,6 +45,7 @@ class RegistrationManager {
 
 	void Mod_Free(model_t* mod);
 
+	int sideSequence[6] = { 4, 1, 5, 0, 2, 3 };
 
 public:
 	RegistrationManager();
@@ -63,7 +64,7 @@ public:
 
 
 	image_t* FindImage(const char* name, imagetype_t type);
-	image_t* FindImage( int id);
+	image_t* FindImage(int id);
 
 	model_t* FindModel(const char* name, qboolean crash);
 	model_t* FindModel(int id, qboolean crash);
@@ -79,6 +80,7 @@ public:
 	image_t* draw_chars;
 	uint32_t rawPalette[256];
 	uint32_t d_8to24table[256];
+	int skySide = 0;
 
 
 	~RegistrationManager();
@@ -90,5 +92,5 @@ struct model_s* R_RegisterModel(char* name);
 struct image_s* R_RegisterSkin(char* name);
 image_t* R_RegisterPic(char* name);
 void R_SetSky(char* name, float rotate, float axis[3]);
-void R_EndRegistration(void); 
+void R_EndRegistration(void);
 void R_SetPalette(const unsigned char* palette);

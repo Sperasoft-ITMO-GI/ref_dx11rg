@@ -280,49 +280,12 @@ void R_BlendLightmaps(void) {
 	if (!r_worldmodel->lightdata)
 		return;
 
-	// Вырубаем Z-буффер
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Z-пїЅпїЅпїЅпїЅпїЅпїЅ
 	// don't bother writing Z
 	//qglDepthMask(0);
 
-	// Тут мы должны выбрать бленд стейт, по примеру ниже
+	// пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
-	/*
-	** set the appropriate blending mode unless we're only looking at the
-	** lightmaps.
-	*/
-	//if (true/*!gl_lightmap->value*/)
-	//{
-	//	qglEnable(GL_BLEND);
-
-	//	if (false/*gl_saturatelighting->value*/)
-	//	{
-	//		qglBlendFunc(GL_ONE, GL_ONE);
-	//	}
-	//	else
-	//	{
-	//		if (false/*gl_monolightmap->string[0] != '0'*/)
-	//		{
-	//			switch (toupper(gl_monolightmap->string[0]))
-	//			{
-	//			case 'I':
-	//				qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
-	//				break;
-	//			case 'L':
-	//				qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
-	//				break;
-	//			case 'A':
-	//			default:
-	//				qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//				break;
-	//			}
-	//		}
-	//		else
-	//		{
-	//			// Мы всегда попадаем вот сюда
-	//			qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
-	//		}
-	//	}
-	//}
 
 	if (currentmodel == r_worldmodel)
 		c_visible_lightmaps = 0;
@@ -1130,7 +1093,7 @@ void R_DrawWorld(void) {
 	DrawTextureChains();
 	R_BlendLightmaps();
 
-	//R_DrawSkyBox();
+	R_DrawSkyBox();
 
 	//R_DrawTriangleOutlines();
 }
