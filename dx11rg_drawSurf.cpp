@@ -105,7 +105,7 @@ Transform hashedTransform;
 DrawGLPoly
 ================
 */
-void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = float2{ 0,0 }, int lightTex = -1) {
+void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = float2{ 0,0 }, int lightTex = -1, ImageUpdate*  updateLM= nullptr) {
 	int		i;
 	float* v;
 
@@ -141,7 +141,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 		p->savedData = RD.RegisterUserPolygon(model, false);
 	}
 
-	UPDrawData data = { hashedTransform , texOffsets, float4{ colorBuf }, false, defines };
+	UPDrawData data = { hashedTransform , texOffsets, float4{ colorBuf }, false, updateLM != nullptr, updateLM,  defines };
 	if (lightTex == -1)
 
 		RD.DrawUserPolygon(p->savedData, texNum, data);
@@ -171,220 +171,6 @@ void DrawGLFlowingPoly(msurface_t* fa, int texNum, uint64_t defines) {
 
 	DrawGLPoly(fa->polys, texNum, defines, float2{ scroll , 0 });
 	return;
-	////qglBegin(GL_POLYGON);
-	//printf("DrawGLFlowingPoly found!!!\n");
-	//UPVertex vert = {};
-	//std::vector<UPVertex> vect;
-	//
-	//v = p->verts[0];
-	//for (i = 0; i < p->numverts; i++, v += VERTEXSIZE) {
-	//	//qglTexCoord2f((v[3] + scroll), v[4]);
-	//	//qglVertex3fv(v);
-	//
-	//	vert.position.x = v[0];
-	//	vert.position.y = v[1];
-	//	vert.position.z = v[2];
-	//	vert.texcoord.x = v[3] + scroll;
-	//	vert.texcoord.y = v[4];
-	//
-	//	vect.push_back(vert);
-	//}
-	//
-	//std::vector<uint16_t> indexes;
-	//
-	//SmartTriangulation(&indexes, p->numverts);
-	//
-	//UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-	//	p->numverts - 1,vect,indexes };
-	//
-	//
-	//RD.DrawNoHashUserPolygon(model, texNum, Transform(), float4{ colorBuf }, UPRED);
-	////qglEnd();
-}
-//PGM
-//============
-
-/*
-** R_DrawTriangleOutlines
-*/
-void R_DrawTriangleOutlines(void) {
-	//int			i, j;
-	//glpoly_t* p;
-	//
-	//if (true/*!gl_showtris->value*/)
-	//	return;
-	//
-	////qglDisable(GL_TEXTURE_2D);
-	////qglDisable(GL_DEPTH_TEST);
-	////qglColor4f(1, 1, 1, 1);
-	//
-	//colorBuf[0] = 1.0f;
-	//colorBuf[1] = 1.0f;
-	//colorBuf[2] = 1.0f;
-	//colorBuf[3] = 1.0f;
-	//
-	//for (i = 0; i < MAX_LIGHTMAPS; i++) {
-	//	msurface_t* surf;
-	//
-	//	for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain) {
-	//		p = surf->polys;
-	//		for (; p; p = p->chain) {
-	//			for (j = 2; j < p->numverts; j++) {
-	//				//qglBegin(GL_LINE_STRIP);
-	//				//qglVertex3fv(p->verts[0]);
-	//				//qglVertex3fv(p->verts[j - 1]);
-	//				//qglVertex3fv(p->verts[j]);
-	//				//qglVertex3fv(p->verts[0]);
-	//				//qglEnd();
-	//			}
-	//		}
-	//	}
-	//}
-
-	//qglEnable(GL_DEPTH_TEST);
-	//qglEnable(GL_TEXTURE_2D);
-}
-
-/*
-** DrawGLPolyChain
-*/
-void DrawGLPolyChain(glpoly_t* p, float soffset, float toffset, int texNum) {
-
-	if (soffset == 0 && toffset == 0) {
-
-
-		for (; p != 0; p = p->chain) {
-			DrawGLPoly(p, texNum, 0, float2{ 0 , 0 });
-		}
-	}
-	else {
-		for (; p != 0; p = p->chain) {
-			DrawGLPoly(p, texNum, 0, float2{ -soffset, -toffset });
-		}
-	}
-}
-
-/*
-** R_BlendLightMaps
-**
-** This routine takes all the given light mapped surfaces in the world and
-** blends them into the framebuffer.
-*/
-void R_BlendLightmaps(void) {
-	int			i;
-	msurface_t* surf, * newdrawsurf = 0;
-
-	// don't bother if we're set to fullbright
-	if (r_fullbright->value)
-		return;
-	if (!r_worldmodel->lightdata)
-		return;
-
-	// �������� Z-������
-	// don't bother writing Z
-	//qglDepthMask(0);
-
-	// ��� �� ������ ������� ����� �����, �� ������� ����
-
-
-	if (currentmodel == r_worldmodel)
-		c_visible_lightmaps = 0;
-
-	/*
-	** render static lightmaps first
-	*/
-	for (i = 1; i < MAX_LIGHTMAPS; i++) {
-		if (gl_lms.lightmap_surfaces[i]) {
-			if (currentmodel == r_worldmodel)
-				c_visible_lightmaps++;
-			//GL_Bind(dx11_state.lightmap_textures + i);
-
-			for (surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain) {
-				if (surf->polys)
-					DrawGLPolyChain(surf->polys, 0, 0, lightmap_textures + i);
-			}
-		}
-	}
-
-	/*
-	** render dynamic lightmaps
-	*/
-	if (true/*gl_dynamic->value*/) {
-		LM_InitBlock();
-
-		//GL_Bind(dx11_state.lightmap_textures + 0);
-
-		if (currentmodel == r_worldmodel)
-			c_visible_lightmaps++;
-
-		newdrawsurf = gl_lms.lightmap_surfaces[0];
-
-		for (surf = gl_lms.lightmap_surfaces[0]; surf != 0; surf = surf->lightmapchain) {
-			int		smax, tmax;
-			byte* base;
-
-			smax = (surf->extents[0] >> 4) + 1;
-			tmax = (surf->extents[1] >> 4) + 1;
-
-			if (LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t)) {
-				base = gl_lms.lightmap_buffer;
-				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
-
-				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
-			}
-			else {
-				msurface_t* drawsurf;
-
-				// upload what we have so far
-				LM_UploadBlock(True);
-
-				// draw all surfaces that use this lightmap
-				for (drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf->lightmapchain) {
-					if (drawsurf->polys)
-						DrawGLPolyChain(drawsurf->polys,
-							(drawsurf->light_s - drawsurf->dlight_s) * (1.0 / 128.0),
-							(drawsurf->light_t - drawsurf->dlight_t) * (1.0 / 128.0),
-							lightmap_textures + 0);
-				}
-
-				newdrawsurf = drawsurf;
-
-				// clear the block
-				LM_InitBlock();
-
-				// try uploading the block now
-				if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t)) {
-					ri.Sys_Error(ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax);
-				}
-
-				base = gl_lms.lightmap_buffer;
-				base += (surf->dlight_t * BLOCK_WIDTH + surf->dlight_s) * LIGHTMAP_BYTES;
-
-				R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
-			}
-		}
-
-		/*
-		** draw remainder of dynamic lightmaps that haven't been uploaded yet
-		*/
-		if (newdrawsurf)
-			LM_UploadBlock(True);
-
-		for (surf = newdrawsurf; surf != 0; surf = surf->lightmapchain) {
-			if (surf->polys)
-				DrawGLPolyChain(surf->polys,
-					(surf->light_s - surf->dlight_s) * (1.0 / 128.0),
-					(surf->light_t - surf->dlight_t) * (1.0 / 128.0),
-					lightmap_textures + 0);
-		}
-	}
-
-	/*
-	** restore state
-	*/
-	//qglDisable(GL_BLEND);
-	//qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//qglDepthMask(1);
 }
 
 /*
@@ -458,15 +244,22 @@ void R_RenderBrushPoly(msurface_t* fa) {
 			R_BuildLightMap(fa, (byte*)(void*)temp, smax * 4);
 			R_SetCacheState(fa);
 
-			/*GL_Bind(dx11_state.lightmap_textures + fa->lightmaptexturenum);
+			uint8_t* data = new uint8_t[34 * 34 * 4];
+			for (int i = 0; i < BLOCK_WIDTH * BLOCK_HEIGHT; i++) {
+				((uint32_t*)data)[i] = temp[i];
+			}
 
-			qglTexSubImage2D(GL_TEXTURE_2D, 0,
-				fa->light_s, fa->light_t,
-				smax, tmax,
-				GL_LIGHTMAP_FORMAT,
-				GL_UNSIGNED_BYTE, temp);*/
-			RD.UpdateTexture(lightmap_textures + fa->lightmaptexturenum, fa->light_s, fa->light_t, smax, tmax, 0, (void*)temp);
+			ImageUpdate updateData{
+				0,
+				ImageBox{fa->light_s, fa->light_t, smax, tmax},
+				34, 34,
+				0, data
+			};
+			updateData.id = lightmap_textures + fa->lightmaptexturenum;
 
+			RD.UpdateTexture(updateData);
+
+			delete[] data;
 			//renderer->UpdateTextureInSRV(smax, tmax, fa->light_s, fa->light_t, 32,
 			//	(unsigned char*)temp, dx11_state.lightmap_textures + fa->lightmaptexturenum);
 
@@ -639,6 +432,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 	if (is_dynamic) {
 		unsigned	temp[128 * 128];
 		int			smax, tmax;
+		ImageUpdate* updateData = new ImageUpdate();
 
 		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && (surf->dlightframe != r_framecount)) {
 
@@ -649,18 +443,23 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 			R_SetCacheState(surf);
 
 			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + surf->lightmaptexturenum);
-
 			lmtex = lightmap_textures + surf->lightmaptexturenum;
 
-			//qglTexSubImage2D(GL_TEXTURE_2D, 0,
-			//	surf->light_s, surf->light_t,
-			//	smax, tmax,
-			//	GL_LIGHTMAP_FORMAT,
-			//	GL_UNSIGNED_BYTE, temp);
-			RD.UpdateTexture(lightmap_textures + surf->lightmaptexturenum, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
 
-			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-			//	(unsigned char*)temp, lightmap_textures + surf->lightmaptexturenum);
+			uint8_t* data = new uint8_t[smax * tmax * 4];
+			for (int i = 0; i < smax * tmax * 4; i++) {
+				(data)[i] = ((uint8_t*)temp)[i];
+			}
+
+			*updateData = ImageUpdate{
+				lmtex,
+				ImageBox{surf->light_s, surf->light_t, smax, tmax},
+				128, 128,0,data
+			};
+
+			//RD.UpdateTexture(lightmap_textures + surf->lightmaptexturenum, 
+			//	surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
+
 
 		}
 		else {
@@ -673,20 +472,22 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 
 			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + 0);
 
-			lmtex = 2 * lightmap_textures + lightmapTex;
+			lmtex = lightmap_textures;
 
-			///*qglTexSubImage2D(GL_TEXTURE_2D, 0,
-			//	surf->light_s, surf->light_t,
-			//	smax, tmax,
-			//	GL_LIGHTMAP_FORMAT,
-			//	GL_UNSIGNED_BYTE, temp);
-			//
-			//	/*renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-			//		(unsigned char*)temp, dx11_state.lightmap_textures + 0);
-			RD.UpdateTexture(2 * lightmap_textures + lightmapTex, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
-			lightmapTex++;
-			//renderer->UpdateTextureInSRV(smax, tmax, surf->light_s, surf->light_t, 32,
-			//	(unsigned char*)temp, lightmap_textures + 0);
+			uint8_t* data = new uint8_t[smax * tmax * 4];
+			for (int i = 0; i < smax * tmax * 4; i++) {
+				(data)[i] = ((uint8_t*)temp)[i];
+			}
+
+			*updateData = ImageUpdate{
+				lmtex,
+				ImageBox{surf->light_s, surf->light_t, smax, tmax},
+				128, 128,0,data
+			};
+
+			//RD.UpdateTexture(2 * lightmap_textures + lightmapTex, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
+			//lightmapTex++;
+
 
 		}
 
@@ -705,12 +506,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 				scroll = -64.0;
 
 			for (p = surf->polys; p; p = p->chain) {
-				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ scroll , 0 }, lmtex);
+				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ scroll , 0 }, lmtex, updateData);
+				updateData = nullptr;
 			}
 		}
 		else {
 			for (p = surf->polys; p; p = p->chain) {
-				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ 0 , 0 }, lmtex);
+				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ 0 , 0 }, lmtex, updateData);
+				updateData = nullptr;
 			}
 		}
 		//PGM
@@ -823,17 +626,7 @@ void R_DrawInlineBModel(void) {
 		}
 	}
 
-	if (!(currententity->flags & RF_TRANSLUCENT)) {
-		if (!multiTexture)
-			R_BlendLightmaps();
-	}
-	else {
-		//qglColor4f(1, 1, 1, 1);
-		colorBuf[0] = 1.0f;
-		colorBuf[1] = 1.0f;
-		colorBuf[2] = 1.0f;
-		colorBuf[3] = 1.0f;
-	}
+	
 }
 
 /*
@@ -1090,8 +883,6 @@ void R_DrawWorld(void) {
 	** theoretically nothing should happen in the next two functions
 	** if multitexture is enabled
 	*/
-	DrawTextureChains();
-	R_BlendLightmaps();
 
 	R_DrawSkyBox();
 
@@ -1251,8 +1042,21 @@ static void LM_UploadBlock(qboolean dynamic) {
 			if (gl_lms.allocated[i] > height)
 				height = gl_lms.allocated[i];
 		}
-		RD.UpdateTexture(lightmap_textures + texture, 0, 0, 32, height, 0,
-			gl_lms.lightmap_buffer);
+
+
+		uint8_t* data = new uint8_t[BLOCK_WIDTH * BLOCK_HEIGHT * 4];
+		for (int i = 0; i < BLOCK_WIDTH * BLOCK_HEIGHT * 4; i++) {
+			data[i] = gl_lms.lightmap_buffer[i];
+		}
+
+		ImageUpdate updateData {
+			lightmap_textures + texture,
+			ImageBox{0, 0, 32, height},
+			128, 128, 0, data
+		};
+
+		RD.UpdateTexture(updateData);
+		delete[] data;
 	}
 	else {
 		RD.RegisterTexture(lightmap_textures + texture, BLOCK_WIDTH, BLOCK_HEIGHT, gl_lms.lightmap_buffer, true);

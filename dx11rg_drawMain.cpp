@@ -398,7 +398,9 @@ void R_DrawParticles(void) {
 	unsigned char color[4];
 	const particle_t* p;
 
-	ParticlesMesh particles;
+	static ParticlesMesh particles;
+	particles.vertixes.clear();
+	particles.indexes.clear();
 	ParticleVertex particle;
 	particles.pt = Renderer::PRIMITIVETYPE_POINTLIST_EXT;
 	particles.primitiveCount = r_newrefdef.num_particles;

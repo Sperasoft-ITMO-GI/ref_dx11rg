@@ -196,7 +196,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 		}
 	}
 
-	static TextureData tex = TextureData(256, 256);
+	static TextureData tex(256, 256);
 	for (size_t h = 0; h < 256; h++) {
 		for (size_t w = 0; w < 256; w++) {
 			auto c = TextureData::Color(image32[h * 256 + w]);
