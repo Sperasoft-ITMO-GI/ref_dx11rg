@@ -457,8 +457,6 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 				128, 128,0,data
 			};
 
-			//RD.UpdateTexture(lightmap_textures + surf->lightmaptexturenum, 
-			//	surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
 
 
 		}
@@ -485,19 +483,10 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 				128, 128,0,data
 			};
 
-			//RD.UpdateTexture(2 * lightmap_textures + lightmapTex, surf->light_s, surf->light_t, smax, tmax, 0, (void*)temp);
-			//lightmapTex++;
-
-
 		}
 
 		c_brush_polys++;
 
-		//GL_MBind(GL_TEXTURE0_SGIS, image->texnum);
-		//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + lmtex);
-
-		//==========
-		//PGM
 		if (surf->texinfo->flags & SURF_FLOWING) {
 			float scroll;
 

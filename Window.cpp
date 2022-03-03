@@ -104,8 +104,8 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 
 
 	windowState.fullscreen = fullscreen;
-	windowState.width = realRect.right - realRect.left;
-	windowState.height = realRect.bottom - realRect.top;
+	windowState.width = width;
+	windowState.height = height;
 	windowState.top = realRect.top;
 	windowState.left = realRect.left;
 
