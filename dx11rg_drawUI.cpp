@@ -210,7 +210,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte* data)
 	RD.UpdateTexture(1300, tex);
 
 
-	UIDrawData drawData{ x, y, windowState.width, windowState.height,
+	UIDrawData drawData{ x, y, w, h+35,
 	0,0,0,0,
 	float4(),
 	0 };

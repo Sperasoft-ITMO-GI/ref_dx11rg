@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
-#include "TextureData.h"
-#include "ModelData.h"
+#include "CoreRenderSystem/Utils/TextureData.h"
+#include "CoreRenderSystem/ModelsUtils/ModelData.h"
 #include "../qcommon/qcommon.h"
 #include "dx11rg_model.h"
 #include "dx11rg_drawData.h"

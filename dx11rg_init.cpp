@@ -144,6 +144,22 @@ void ReloadShaders() {
 		RD.ReloadShader(shD);
 		ri.FS_FreeFile(shD.data);
 	}
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::BloomShader;
+		shD.dataSize = ri.FS_LoadFile("BloomShader.hlsl", (void**)&shD.data);
+
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::FXAAShader;
+		shD.dataSize = ri.FS_LoadFile("FXAAShader.hlsl", (void**)&shD.data);
+
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
 }
 
 void R_Shutdown(void) {
