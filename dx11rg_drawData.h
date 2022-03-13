@@ -4,21 +4,6 @@
 #include "dx11rg_model.h"
 #include "dx11rg_common.h"
 
-struct ViewData {
-	vec3_t forward;
-	vec3_t right;
-	vec3_t up;
-
-	matrix ViewMatrix;
-	matrix ViewMatrixInv;
-	matrix ProjectionMatrix;
-	matrix ProjectionMatrixInv;
-	matrix ViewProjectionMatrix;
-	matrix ViewProjectionMatrixInv;
-};
-
-extern ViewData currentView;
-
 extern model_t* r_worldmodel;
 
 extern float		gldepthmin, gldepthmax;
