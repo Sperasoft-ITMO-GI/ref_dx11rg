@@ -139,7 +139,7 @@ void ReloadShaders() {
 	{
 		RenderDevice::ShaderData shD;
 		shD.type = RenderDevice::ShaderType::EndBSPShader;
-		shD.dataSize = ri.FS_LoadFile("BSPEndShader.hlsl", (void**)&shD.data);
+		shD.dataSize = ri.FS_LoadFile("PostProcessShader.hlsl", (void**)&shD.data);
 
 		RD.ReloadShader(shD);
 		ri.FS_FreeFile(shD.data);
@@ -156,6 +156,14 @@ void ReloadShaders() {
 		RenderDevice::ShaderData shD;
 		shD.type = RenderDevice::ShaderType::FXAAShader;
 		shD.dataSize = ri.FS_LoadFile("FXAAShader.hlsl", (void**)&shD.data);
+
+		RD.ReloadShader(shD);
+		ri.FS_FreeFile(shD.data);
+	}
+	{
+		RenderDevice::ShaderData shD;
+		shD.type = RenderDevice::ShaderType::MBShader;
+		shD.dataSize = ri.FS_LoadFile("MotionBlurShader.hlsl", (void**)&shD.data);
 
 		RD.ReloadShader(shD);
 		ri.FS_FreeFile(shD.data);

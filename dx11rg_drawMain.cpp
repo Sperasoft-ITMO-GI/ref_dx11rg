@@ -222,8 +222,8 @@ void R_SetupDX(void)
     data.time = r_newrefdef.time;
     data.view = viewMatrix;
     data.projection = matrix::CreatePerspectiveFieldOfView(DegToRad(r_newrefdef.fov_y),
-                                                           (float)r_newrefdef.width / (float)r_newrefdef.height, 0.1f,
-                                                           20000.0f);;
+                                                           (float)r_newrefdef.width / (float)r_newrefdef.height, 1.f,
+                                                           1500.0f);;
 
 
     RD.SetRenderData(data);
