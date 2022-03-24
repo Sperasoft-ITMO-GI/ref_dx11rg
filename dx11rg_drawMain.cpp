@@ -398,7 +398,7 @@ void R_Flash()
     RD.DrawColor(data);
 };
 
-matrix R_RotateForEntity(entity_t* e, bool lerped)
+matrix R_RotateForEntity(entity_t* e, bool old)
 {
     matrix result = matrix::CreateTranslation(0, 0, 0);
     //	qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
@@ -412,15 +412,17 @@ matrix R_RotateForEntity(entity_t* e, bool lerped)
     matrix RotYMat = matrix::CreateRotationY(DegToRad(-e->angles[0]));
     matrix RotXMat = matrix::CreateRotationX(DegToRad(-e->angles[2]));
     matrix TranMat;
-    if (lerped)
+    if (old)
     {
-        TranMat = matrix::CreateTranslation(
-            e->origin[0] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[0],
-            e->origin[1] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[1],
-            e->origin[2] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[2]);
+        //TranMat = matrix::CreateTranslation(
+        //    e->origin[0] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[0],
+        //    e->origin[1] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[1],
+        //    e->origin[2] * (1 - currententity->backlerp) + currententity->backlerp * e->oldorigin[2]);
+        
+        TranMat = matrix::CreateTranslation(float3(e->oldorigin));
     } else
     {
-        TranMat = matrix::CreateTranslation(e->origin[0], e->origin[1], e->origin[2]);
+        TranMat = matrix::CreateTranslation(float3(e->origin));
     }
 
     result = RotXMat * RotYMat * RotZMat * TranMat;

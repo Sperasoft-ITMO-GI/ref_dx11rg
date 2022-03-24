@@ -96,6 +96,8 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 void ReloadShaders() {
 	printf("Shaders recompiled.\n");
+	RD.InitShaders("P:\\Quake-2\\ref_dx11rg\\DX11RenderEngine\\DX11RenderEngine\\CoreRenderSystem\\Renderers\\Shaders\\");
+	/*
 	{
 		RenderDevice::ShaderData shD;
 		shD.type = RenderDevice::ShaderType::ModelsShader;
@@ -168,6 +170,7 @@ void ReloadShaders() {
 		RD.ReloadShader(shD);
 		ri.FS_FreeFile(shD.data);
 	}
+	*/
 }
 
 void R_Shutdown(void) {

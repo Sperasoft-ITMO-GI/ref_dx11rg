@@ -105,7 +105,7 @@ void R_DrawEntitiesOnList(void);
 void R_DrawEntitiesOnList();
 void R_DrawWorld(void);
 void R_DrawAliasModel(entity_t* e);
-matrix R_RotateForEntity(entity_t* e, bool lerped = true);
+matrix R_RotateForEntity(entity_t* e, bool old);
 void R_DrawBrushModel(entity_t* e);
 void EmitWaterPolys(msurface_t* fa);
 

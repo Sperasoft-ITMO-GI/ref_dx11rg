@@ -228,9 +228,15 @@ void R_DrawAliasModel(entity_t* e) {
 	//{ currententity->angles[0], currententity->angles[1], currententity->angles[2] },
 	//{ 1,1,1 });
 
-	LerpModelDrawData data = { R_RotateForEntity(e), 
+	LerpModelDrawData data = {
+		R_RotateForEntity(e, true), 
+		R_RotateForEntity(e, false), 
 		currentmodel->num_frames == 1,
-		currententity->backlerp, currententity->oldframe, currententity->frame, float4(),
+		currententity->isGun,
+		currententity->backlerp,
+		currententity->old_backlerp,
+		currententity->oldframe, currententity->frame,
+		float4(),
 		MBAD_UV | MLIGHTED };
 	
 	if (currentmodel->num_frames != 1) {
