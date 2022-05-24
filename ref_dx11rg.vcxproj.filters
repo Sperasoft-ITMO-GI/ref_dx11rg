@@ -105,15 +105,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\baseq2\BSPShader.hlsl">
-      <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\baseq2\ModelsShader.hlsl">
-      <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\baseq2\UIShader.hlsl">
-      <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-  </ItemGroup>
 </Project>

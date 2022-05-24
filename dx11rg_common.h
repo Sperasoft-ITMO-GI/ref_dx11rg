@@ -1,5 +1,5 @@
 #pragma once
-#include "pch.h"
+#include "DX11RenderEngine/DX11RenderEngine/pch.h"
 
 #ifndef _WIN32
 #  error You should not be including this file on this platform

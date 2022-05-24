@@ -133,7 +133,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsCpp</CompileAs>
-      <AdditionalIncludeDirectories>P:\Quake-2\ref_dx11rg\DX11RenderEngine\dxerr;P:\Quake-2\ref_dx11rg\DX11RenderEngine\DX11RenderEngine\Utils\include;P:\Quake-2\ref_dx11rg\DX11RenderEngine\DX11RenderEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ref_dx11rg\DX11RenderEngine\dxerr\;$(SolutionDir)ref_dx11rg\DX11RenderEngine\DX11RenderEngine\Utils\include;$(SolutionDir)ref_dx11rg\DX11RenderEngine\DX11RenderEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

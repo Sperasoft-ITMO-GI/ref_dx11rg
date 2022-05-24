@@ -1,6 +1,5 @@
 #pragma once
 
-#include "pch.h"
 #include <assert.h>
 
 #include <stdio.h>
@@ -12,7 +11,7 @@
 #include "../win32/winquake.h"
 
 
-#include "RenderEngine.h"
+#include "DX11RenderEngine/DX11RenderEngine/RenderEngine.h"
 #include "Window.h"
 #include "RegistrationManager.h"
 
