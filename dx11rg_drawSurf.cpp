@@ -132,7 +132,25 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 
 		std::vector<uint32_t> indexes;
 
-		SmartTriangulation(&indexes, p->numverts);
+		SmartTriangulation(&indexes, p->numverts);\
+		for (int i = 0; i < indexes.size()/3; i++)
+		{
+			float3	v1 = vect[indexes[i*3]].position;
+			float3	v2 = vect[indexes[i*3+1]].position;
+			float3	v3 = vect[indexes[i*3+2]].position;
+			float3 normal = DirectX::SimpleMath::Vector3::Cross(v1-v2, v1 - v3);
+			normal.Normalize();
+			if (normal.Length() > 0.00001)
+			{
+				vect[indexes[i*3]].normal   = normal;
+				vect[indexes[i*3+1]].normal = normal;
+				vect[indexes[i*3+2]].normal = normal;
+			} else
+			{
+				int a = 1;
+				a++;
+			}
+		}
 
 		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
 			p->numverts - 2, vect, indexes };

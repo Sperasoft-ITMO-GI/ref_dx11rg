@@ -483,11 +483,18 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 			verticies3[frameIndex][0].position = float3(ptrverts[index1][0], ptrverts[index1][1], ptrverts[index1][2]);
 			verticies3[frameIndex][1].position = float3(ptrverts[index2][0], ptrverts[index2][1], ptrverts[index2][2]);
 			verticies3[frameIndex][2].position = float3(ptrverts[index3][0], ptrverts[index3][1], ptrverts[index3][2]);
-			
 
-			verticies3[frameIndex][0].normal = float3(r_avertexnormals[ptrnormals[index1]]);
-			verticies3[frameIndex][1].normal = float3(r_avertexnormals[ptrnormals[index2]]);
-			verticies3[frameIndex][2].normal = float3(r_avertexnormals[ptrnormals[index3]]);
+			float3 normal = DirectX::SimpleMath::Vector3::Cross(
+				verticies3[frameIndex][0].position-verticies3[frameIndex][1].position,
+				verticies3[frameIndex][2].position-verticies3[frameIndex][0].position);
+			normal.Normalize();
+
+			verticies3[frameIndex][0].normal = normal;
+			verticies3[frameIndex][1].normal = normal;
+			verticies3[frameIndex][2].normal = normal;
+			//verticies3[frameIndex][0].normal = float3(r_avertexnormals[ptrnormals[index1]]);
+			//verticies3[frameIndex][1].normal = float3(r_avertexnormals[ptrnormals[index2]]);
+			//verticies3[frameIndex][2].normal = float3(r_avertexnormals[ptrnormals[index3]]);
 
 			//verticies3[frameIndex][0].normalDot = (shadedots[ptrnormals[index1]]);
 			//verticies3[frameIndex][1].normalDot = (shadedots[ptrnormals[index2]]);
