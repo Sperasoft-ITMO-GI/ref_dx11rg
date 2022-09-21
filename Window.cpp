@@ -84,10 +84,21 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 	//w:1024,h:676, (w:1040,h:715,
 
 	try {
-		windowState.hWnd = CreateWindowEx(
+		windowState.hWnd1 = CreateWindowEx(
 			exstyle,
 			WINDOW_CLASS_NAME,
 			L"Quake 2",
+			stylebits,
+			x, y, w, h,
+			NULL,
+			NULL,
+			windowState.hInstance,
+			NULL);
+		
+		windowState.hWnd2 = CreateWindowEx(
+			exstyle,
+			WINDOW_CLASS_NAME,
+			L"Quake 2, Test",
 			stylebits,
 			x, y, w, h,
 			NULL,
@@ -100,7 +111,7 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 	}
 
 	RECT realRect;
-	GetWindowRect(windowState.hWnd, &realRect);
+	GetWindowRect(windowState.hWnd1, &realRect);
 
 
 	windowState.fullscreen = fullscreen;
@@ -109,15 +120,24 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 	windowState.top = realRect.top;
 	windowState.left = realRect.left;
 
-	if (!windowState.hWnd)
+	if (!windowState.hWnd1)
 		ri.Sys_Error(ERR_FATAL, "Couldn't create window");
 
-	ShowWindow(windowState.hWnd, SW_SHOW);
-	UpdateWindow(windowState.hWnd);
+	ShowWindow(windowState.hWnd1, SW_SHOW);
+	UpdateWindow(windowState.hWnd1);
+	
+	GetWindowRect(windowState.hWnd2, &realRect);
+	
+
+	if (!windowState.hWnd2)
+		ri.Sys_Error(ERR_FATAL, "Couldn't create window");
+
+	ShowWindow(windowState.hWnd2, SW_SHOW);
+	UpdateWindow(windowState.hWnd2);
 
 
-	SetForegroundWindow(windowState.hWnd);
-	SetFocus(windowState.hWnd);
+	SetForegroundWindow(windowState.hWnd2);
+	SetFocus(windowState.hWnd2);
 
 	// let the sound and input subsystems know about the new window
 
@@ -151,7 +171,7 @@ void ResizeWindow(int width, int height, int left, int top, bool fullscreen) {
 	r.bottom = height + top;
 
 	AdjustWindowRectEx(&r, stylebits, FALSE, exstyle);
-	SetWindowPos(windowState.hWnd, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW);
+	SetWindowPos(windowState.hWnd1, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW);
 
 	windowState.fullscreen = fullscreen;
 	windowState.width = r.right - r.left;
@@ -162,9 +182,11 @@ void ResizeWindow(int width, int height, int left, int top, bool fullscreen) {
 }
 
 void ReleaseWindow() {
-	DestroyWindow(windowState.hWnd);
+	DestroyWindow(windowState.hWnd1);
+	DestroyWindow(windowState.hWnd2);
 }
 
 void SetTitle(const std::string& title) {
-	SetWindowTextA(windowState.hWnd, title.c_str());
+	SetWindowTextA(windowState.hWnd1, title.c_str());
+	SetWindowTextA(windowState.hWnd2, title.c_str());
 }

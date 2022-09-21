@@ -1,5 +1,6 @@
 #pragma once
 #include "dx11rg_local.h"
+#include "RegistrationManager.h"
 #include "Window.h"
 
 cvar_t* vid_fullscreen;
@@ -15,11 +16,11 @@ const char* compileHLSLComand = "Recompile";
 
 void GLimp_AppActivate(qboolean active) {
 	if (active) {
-		SetForegroundWindow(windowState.hWnd);
-		ShowWindow(windowState.hWnd, SW_RESTORE);
+		SetForegroundWindow(windowState.hWnd1);
+		ShowWindow(windowState.hWnd1, SW_RESTORE);
 	} else {
 		if (windowState.fullscreen)
-			ShowWindow(windowState.hWnd, SW_MINIMIZE);
+			ShowWindow(windowState.hWnd1, SW_MINIMIZE);
 	}
 }
 
@@ -43,6 +44,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 	int x = vid_xpos->value;
 	int y = vid_ypos->value;
 
+
 	ri.Vid_GetModeInfo(&width, &height, mode);
 	/*
 	D3D11 ERROR: ID3D11DeviceContext::OMSetRenderTargets: 
@@ -55,7 +57,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 	InitWindow(L"Quake 2", width, height, x, y, fullscreen);
 
-	RD.InitDevice(windowState.hWnd, windowState.width, windowState.height);
+	RD.InitDevice({windowState.hWnd1,windowState.hWnd2, windowState.width, windowState.height});
 	
 	ReloadShaders();
 
@@ -96,7 +98,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 void ReloadShaders() {
 	printf("Shaders recompiled.\n");
-	RD.InitShaders("P:\\Quake-2\\ref_dx11rg\\DX11RenderEngine\\DX11RenderEngine\\CoreRenderSystem\\Renderers\\Shaders\\");
+	RD.InitShaders("E:\\Quake-2\\ref_dx11rg\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
 	/*
 	{
 		RenderDevice::ShaderData shD;

@@ -1,4 +1,5 @@
 #include "dx11rg_drawData.h"
+#include "RegistrationManager.h"
 
 
 model_t* r_worldmodel;
@@ -367,7 +368,7 @@ void R_DrawParticles(void)
     particles.vertixes.clear();
     particles.indexes.clear();
     ParticleVertex particle;
-    particles.pt = Renderer::PRIMITIVETYPE_POINTLIST_EXT;
+    particles.pt = PRIMITIVETYPE_POINTLIST_EXT;
     particles.primitiveCount = r_newrefdef.num_particles;
     for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
     {
@@ -390,7 +391,7 @@ void R_Flash()
     if (!v_blend[3])
         return;
     UIDrawData data{
-        0, 0, windowState.width, windowState.height,
+        0, 0, (int)windowState.width, (int)windowState.height,
         0, 0, 0, 0,
         float4(v_blend),
         UICOLORED

@@ -1,5 +1,5 @@
 #pragma once
-#include "DX11RenderEngine/DX11RenderEngine/pch.h"
+#include "winHandler.h"
 
 #ifndef _WIN32
 #  error You should not be including this file on this platform
@@ -8,7 +8,8 @@
 struct WinState{
 	HINSTANCE hInstance;
 	WNDPROC   wndproc;
-	HWND      hWnd;			// handle to window
+	HWND      hWnd1;			// handle to window
+	HWND      hWnd2;			// handle to window
 
 	size_t width;
 	size_t height;

@@ -1,12 +1,12 @@
 #pragma once
-#include <map>
+#include <array>
+
 #include "../qcommon/qcommon.h"
 #include "dx11rg_model.h"
 #include "dx11rg_drawData.h"
 
 
 class RegistrationManager;
-extern RegistrationManager RM;
 
 
 #define MAX_DXTEXTURES 2000
@@ -84,6 +84,9 @@ public:
 	~RegistrationManager();
 
 };
+
+
+extern RegistrationManager RM;
 
 void R_BeginRegistration(char* model);
 struct model_s* R_RegisterModel(char* name);

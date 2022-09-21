@@ -1,8 +1,6 @@
 #pragma once
 
-#include "dx11rg_local.h"
 #include "dx11rg_model.h"
-#include "dx11rg_common.h"
 
 extern model_t* r_worldmodel;
 

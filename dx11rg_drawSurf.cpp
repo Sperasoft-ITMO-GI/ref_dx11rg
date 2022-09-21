@@ -5,6 +5,7 @@
 #include "dx11rg_local.h"
 #include "dx11rg_model.h"
 #include "dx11rg_drawData.h"
+#include "RegistrationManager.h"
 
 // GL_RSURF.C: surface-related refresh code
 #include <assert.h>
@@ -152,7 +153,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 			}
 		}
 
-		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+		UPModelMesh model = { PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
 			p->numverts - 2, vect, indexes };
 
 
@@ -1066,7 +1067,7 @@ static void LM_UploadBlock(qboolean dynamic) {
 		delete[] data;
 	}
 	else {
-		RD.RegisterTexture(lightmap_textures + texture, BLOCK_WIDTH, BLOCK_HEIGHT, gl_lms.lightmap_buffer, true);
+		RD.RegisterTexture(lightmap_textures + texture, BLOCK_WIDTH, BLOCK_HEIGHT, gl_lms.lightmap_buffer, false);
 
 		if (++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS)
 			ri.Sys_Error(ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n");

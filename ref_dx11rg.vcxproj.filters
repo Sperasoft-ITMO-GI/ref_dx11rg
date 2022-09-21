@@ -60,6 +60,9 @@
     <ClInclude Include="dx11rg_model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="winHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ctf\q_shared.c">

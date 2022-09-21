@@ -1,6 +1,7 @@
 // gl_warp.c -- sky and water polygons
 
 #include "dx11rg_local.h"
+#include "RegistrationManager.h"
 #include "dx11rg_model.h"
 #include "dx11rg_drawData.h"
 // gl_warp.c -- sky and water polygons
@@ -231,7 +232,7 @@ void EmitWaterPolys(msurface_t* fa) {
 
 
 
-		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLESTRIP,
+		UPModelMesh model = { PrimitiveType::PRIMITIVETYPE_TRIANGLESTRIP,
 			p->numverts - 2, vect,indexes };
 
 		UPDrawData data = { Transform() , float2{0,0}, float4{ colorBuf }, true, false, nullptr, UPALPHA };

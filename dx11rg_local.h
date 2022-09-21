@@ -11,9 +11,9 @@
 #include "../win32/winquake.h"
 
 
-#include "DX11RenderEngine/DX11RenderEngine/RenderEngine.h"
+//#include "RenderEngine.h"
 #include "Window.h"
-#include "RegistrationManager.h"
+#include "RenderEngine.h"
 
 extern RenderDevice RD;
 //#include "dx11_init.h"

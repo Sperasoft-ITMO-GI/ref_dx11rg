@@ -146,7 +146,7 @@ void Draw_FadeScreen(void) {
 
 	//
 	//auto c = { 0.0f, 0.0f, 0.0f, 0.8f };
-	UIDrawData data{ 0, 0, windowState.width, windowState.height,
+	UIDrawData data{ 0, 0,(int) windowState.width,(int) windowState.height,
 	0,0,0,0,
 	float4(0.0f, 0.0f, 0.0f, 0.8f),
 	UICOLORED };

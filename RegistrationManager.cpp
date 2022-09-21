@@ -1,7 +1,6 @@
 #include "RegistrationManager.h"
 #include "dx11rg_local.h"
 #include	<fstream>
-#define _CRT_SECURE_NO_WARNINGS
 
 RegistrationManager::RegistrationManager() {
 	for (int i = 0; i < MAX_DXTEXTURES; i++) {
@@ -181,7 +180,7 @@ void RegistrationManager::EndRegistration() {
 	}
 
 
-	image_t* image;
+	image_t* image = nullptr;
 
 	// never free r_notexture or particle texture
 	//r_notexture->registration_sequence = registration_sequence;
@@ -446,7 +445,7 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 
 
 	int index = 0;
-	result.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.pt = PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 	result.frames.resize(num_frames);
 	//mod->realModel.frames.shrink_to_fit();;
 	//for (int frameIndex = 0; frameIndex < num_frames; frameIndex++) {
@@ -457,7 +456,7 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 	//	}
 	//}
 
-	result.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.pt = PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 	//dx11Model.indexes.resize(header.num_tris * 3);
 	//dx11Model.verticies.resize(header.num_tris * 3);
 	//dx11Model.primitiveCount = header.num_tris;

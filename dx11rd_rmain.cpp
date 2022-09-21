@@ -2,6 +2,7 @@
 
 #include "dx11rg_local.h"
 #include "dx11rg_drawData.h"
+#include "RegistrationManager.h"
 
 
 
