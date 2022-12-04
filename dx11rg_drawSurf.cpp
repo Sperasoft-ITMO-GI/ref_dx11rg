@@ -139,7 +139,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 			float3	v1 = vect[indexes[i*3]].position;
 			float3	v2 = vect[indexes[i*3+1]].position;
 			float3	v3 = vect[indexes[i*3+2]].position;
-			float3 normal = DirectX::SimpleMath::Vector3::Cross(v1-v2, v1 - v3);
+			float3 normal = (v1-v2).Cross(v1 - v3);
 			normal.Normalize();
 			if (normal.Length() > 0.00001)
 			{
@@ -153,7 +153,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 			}
 		}
 
-		UPModelMesh model = { PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+		UPModelMesh model = { EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
 			p->numverts - 2, vect, indexes };
 
 

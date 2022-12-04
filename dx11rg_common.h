@@ -8,8 +8,7 @@
 struct WinState{
 	HINSTANCE hInstance;
 	WNDPROC   wndproc;
-	HWND      hWnd1;			// handle to window
-	HWND      hWnd2;			// handle to window
+	HWND      hWnd;			// handle to window
 
 	size_t width;
 	size_t height;

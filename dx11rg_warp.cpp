@@ -232,7 +232,7 @@ void EmitWaterPolys(msurface_t* fa) {
 
 
 
-		UPModelMesh model = { PrimitiveType::PRIMITIVETYPE_TRIANGLESTRIP,
+		UPModelMesh model = { EPrimitiveType::PRIMITIVETYPE_TRIANGLESTRIP,
 			p->numverts - 2, vect,indexes };
 
 		UPDrawData data = { Transform() , float2{0,0}, float4{ colorBuf }, true, false, nullptr, UPALPHA };

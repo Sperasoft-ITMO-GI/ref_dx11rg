@@ -445,7 +445,7 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 
 
 	int index = 0;
-	result.pt = PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.pt = EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 	result.frames.resize(num_frames);
 	//mod->realModel.frames.shrink_to_fit();;
 	//for (int frameIndex = 0; frameIndex < num_frames; frameIndex++) {
@@ -456,7 +456,7 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 	//	}
 	//}
 
-	result.pt = PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.pt = EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 	//dx11Model.indexes.resize(header.num_tris * 3);
 	//dx11Model.verticies.resize(header.num_tris * 3);
 	//dx11Model.primitiveCount = header.num_tris;
@@ -483,9 +483,9 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 			verticies3[frameIndex][1].position = float3(ptrverts[index2][0], ptrverts[index2][1], ptrverts[index2][2]);
 			verticies3[frameIndex][2].position = float3(ptrverts[index3][0], ptrverts[index3][1], ptrverts[index3][2]);
 
-			float3 normal = DirectX::SimpleMath::Vector3::Cross(
-				verticies3[frameIndex][0].position-verticies3[frameIndex][1].position,
-				verticies3[frameIndex][2].position-verticies3[frameIndex][0].position);
+			float3 normal =
+				(verticies3[frameIndex][0].position - verticies3[frameIndex][1].position).Cross(
+				(verticies3[frameIndex][2].position - verticies3[frameIndex][0].position));
 			normal.Normalize();
 
 			verticies3[frameIndex][0].normal = normal;

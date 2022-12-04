@@ -16,11 +16,11 @@ const char* compileHLSLComand = "Recompile";
 
 void GLimp_AppActivate(qboolean active) {
 	if (active) {
-		SetForegroundWindow(windowState.hWnd1);
-		ShowWindow(windowState.hWnd1, SW_RESTORE);
+		SetForegroundWindow(windowState.hWnd);
+		ShowWindow(windowState.hWnd, SW_RESTORE);
 	} else {
 		if (windowState.fullscreen)
-			ShowWindow(windowState.hWnd1, SW_MINIMIZE);
+			ShowWindow(windowState.hWnd, SW_MINIMIZE);
 	}
 }
 
@@ -57,7 +57,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 	InitWindow(L"Quake 2", width, height, x, y, fullscreen);
 
-	RD.InitDevice({windowState.hWnd1,windowState.hWnd2, windowState.width, windowState.height});
+	RD.InitDevice({windowState.hWnd, windowState.width, windowState.height});
 	
 	ReloadShaders();
 
@@ -98,81 +98,8 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 void ReloadShaders() {
 	printf("Shaders recompiled.\n");
-	RD.InitShaders("E:\\Quake-2\\ref_dx11rg\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
-	/*
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::ModelsShader;
-		shD.dataSize = ri.FS_LoadFile("ModelsShader.hlsl", (void**)&shD.data);
+	RD.InitShaders("ref_dx11rg\\DX11RenderEngine\\QuakeRenderEngine\\Shaders\\");
 	
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::UIShader;
-		shD.dataSize = ri.FS_LoadFile("UIShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::UPShader;
-		shD.dataSize = ri.FS_LoadFile("BSPShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::ParticlesShader;
-		shD.dataSize = ri.FS_LoadFile("ParticlesShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::SkyShader;
-		shD.dataSize = ri.FS_LoadFile("SkyShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::EndBSPShader;
-		shD.dataSize = ri.FS_LoadFile("PostProcessShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::BloomShader;
-		shD.dataSize = ri.FS_LoadFile("BloomShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::FXAAShader;
-		shD.dataSize = ri.FS_LoadFile("FXAAShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	{
-		RenderDevice::ShaderData shD;
-		shD.type = RenderDevice::ShaderType::MBShader;
-		shD.dataSize = ri.FS_LoadFile("MotionBlurShader.hlsl", (void**)&shD.data);
-
-		RD.ReloadShader(shD);
-		ri.FS_FreeFile(shD.data);
-	}
-	*/
 }
 
 void R_Shutdown(void) {
