@@ -115,7 +115,6 @@ bool InitWindow(LPCWSTR name, int width, int height, int left, int top, bool ful
 	ShowWindow(windowState.hWnd, SW_SHOW);
 	UpdateWindow(windowState.hWnd);
 	
-
 	// let the sound and input subsystems know about the new window
 
 

@@ -33,6 +33,7 @@ void GLimp_EndFrame(void) {
 	while (!RD.Present()) {
 		RD.EndFrame();
 		ReloadShaders();
+		RD.BeginFrame();
 	};
 	RD.EndFrame();
 
