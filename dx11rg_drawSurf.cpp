@@ -501,7 +501,7 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 				ImageBox{surf->light_s, surf->light_t, smax, tmax},
 				128, 128,0,data
 			};
-
+			//RD.UpdateTexture(*updateData);
 		}
 
 		c_brush_polys++;
@@ -1214,7 +1214,9 @@ void GL_CreateSurfaceLightmap(msurface_t* surf) {
 	R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
 }
 
-
+unsigned dynamicLightMap[128 * 128 * MAX_LIGHTMAPS];
+unsigned nonDynamicLightMap[128 * 128 * MAX_LIGHTMAPS];
+unsigned dynamicLightMapUpdateFlag[MAX_LIGHTMAPS];
 /*
 ==================
 GL_BeginBuildingLightmaps
