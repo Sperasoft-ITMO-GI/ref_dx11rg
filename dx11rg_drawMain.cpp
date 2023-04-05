@@ -276,6 +276,13 @@ R_DrawEntitiesOnList
 void R_DrawEntitiesOnList(void)
 {
     int i;
+
+    for (int i = 0; i < MAX_LIGHTMAPS; i ++)
+    {
+        //nonDynamicLightMapUpdateFlag[i] = 0;
+        //dynamicLightMapUpdateFlag2 = 0;
+    }
+    dynamicLightMapUpdateFlag = 0;
     //
     //if (!r_drawentities->value)
     //	return;

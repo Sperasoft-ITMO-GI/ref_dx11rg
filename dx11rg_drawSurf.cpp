@@ -27,10 +27,13 @@ msurface_t* r_alpha_surfaces;
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	128
 
-#define	MAX_LIGHTMAPS	128
+#define	MAX_LIGHTMAPS	32
 
 int		c_visible_lightmaps;
 int		c_visible_textures;
+
+
+TextureData dynamicLightMap = {128*MAX_LIGHTMAPS, 128};
 
 #define GL_LIGHTMAP_FORMAT GL_RGBA
 
@@ -106,7 +109,7 @@ Transform hashedTransform;
 DrawGLPoly
 ================
 */
-void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = float2{ 0,0 }, int lightTex = -1, ImageUpdate*  updateLM= nullptr) {
+void DrawGLPoly(glpoly_t* p, int texNum, int ligntTexShift, uint64_t defines, float2 texOffsets = float2{ 0,0 }, int lightTex = -1, ImageUpdate*  updateLM= nullptr) {
 	int		i;
 	float* v;
 
@@ -127,6 +130,8 @@ void DrawGLPoly(glpoly_t* p, int texNum, uint64_t defines, float2 texOffsets = f
 			vert.texcoord.y = v[4];
 			vert.lightTexcoord.x = v[5];
 			vert.lightTexcoord.y = v[6];
+			vert.dynamicLightTexcoord.x = (v[5]+ ligntTexShift)/ MAX_LIGHTMAPS;
+			vert.dynamicLightTexcoord.y = v[6];
 
 			vect.push_back(vert);
 		}
@@ -188,7 +193,7 @@ void DrawGLFlowingPoly(msurface_t* fa, int texNum, uint64_t defines) {
 	if (scroll == 0.0)
 		scroll = -64.0;
 
-	DrawGLPoly(fa->polys, texNum, defines, float2{ scroll , 0 });
+	DrawGLPoly(fa->polys, texNum, fa->lightmaptexturenum, defines, float2{ scroll , 0 });
 	return;
 }
 
@@ -230,7 +235,7 @@ void R_RenderBrushPoly(msurface_t* fa) {
 	if (fa->texinfo->flags & SURF_FLOWING)
 		DrawGLFlowingPoly(fa, image->texnum, 0);
 	else
-		DrawGLPoly(fa->polys, image->texnum, 0);
+		DrawGLPoly(fa->polys, image->texnum, fa->lightmaptexturenum, 0);
 	//PGM
 	//======
 
@@ -274,6 +279,8 @@ void R_RenderBrushPoly(msurface_t* fa) {
 				34, 34,
 				0, data
 			};
+
+			
 			updateData.id = lightmap_textures + fa->lightmaptexturenum;
 
 			RD.UpdateTexture(updateData);
@@ -349,7 +356,7 @@ void R_DrawAlphaSurfaces(void) {
 		if (s->flags & SURF_DRAWTURB)
 			EmitWaterPolys(s);
 		else
-			DrawGLPoly(s->polys, s->texinfo->image->texnum, UPALPHA);
+			DrawGLPoly(s->polys, s->lightmaptexturenum, s->texinfo->image->texnum, UPALPHA);
 	}
 
 	//qglColor4f(1, 1, 1, 1);
@@ -451,8 +458,8 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 	if (is_dynamic) {
 		unsigned	temp[128 * 128];
 		int			smax, tmax;
-		ImageUpdate* updateData = new ImageUpdate();
-
+		ImageUpdate* updateData = nullptr;
+		uint dFlag = 0;;
 		if ((surf->styles[map] >= 32 || surf->styles[map] == 0) && (surf->dlightframe != r_framecount)) {
 
 			smax = (surf->extents[0] >> 4) + 1;
@@ -470,14 +477,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 				(data)[i] = ((uint8_t*)temp)[i];
 			}
 
+			
+			updateData = new ImageUpdate();
 			*updateData = ImageUpdate{
 				lmtex,
 				ImageBox{surf->light_s, surf->light_t, smax, tmax},
 				128, 128,0,data
 			};
-
-
-
+			
 		}
 		else {
 			// TODO: Here is a bug with dynamic lightmap update
@@ -485,22 +492,30 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 			smax = (surf->extents[0] >> 4) + 1;
 			tmax = (surf->extents[1] >> 4) + 1;
 
-			R_BuildLightMap(surf, (byte*)(void*)temp, smax * 4);
+			R_BuildLightMap(surf, (byte*)(void*)(temp), smax * 4);
 
 			//GL_MBind(GL_TEXTURE1_SGIS, dx11_state.lightmap_textures + 0);
 
 			lmtex = lightmap_textures;
-
-			uint8_t* data = new uint8_t[smax * tmax * 4];
-			for (int i = 0; i < smax * tmax * 4; i++) {
-				(data)[i] = ((uint8_t*)temp)[i];
+			//uint8_t* data = new uint8_t[smax * tmax * 4];
+			
+			for (int x = 0; x < smax; x++)
+			{
+				for (int y = 0; y <  tmax; y++) {
+					dynamicLightMap.PutPixel(surf->light_s+x + 128 * surf->lightmaptexturenum, surf->light_t+y, (temp)[y*smax+x]);
+				}
 			}
-
-			*updateData = ImageUpdate{
-				lmtex,
-				ImageBox{surf->light_s, surf->light_t, smax, tmax},
-				128, 128,0,data
-			};
+			dFlag = 1;
+			if (!dynamicLightMapUpdateFlag)
+			{
+				dynamicLightMapUpdateFlag = 1;
+				updateData = new ImageUpdate();
+				*updateData = ImageUpdate{
+					lmtex,
+					ImageBox{0, 0, 128*MAX_LIGHTMAPS, 128},
+					128*MAX_LIGHTMAPS, 128,0,(byte*)(void*)(dynamicLightMap.GetBufferPtr())
+				};
+			}
 			//RD.UpdateTexture(*updateData);
 		}
 
@@ -514,13 +529,13 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 				scroll = -64.0;
 
 			for (p = surf->polys; p; p = p->chain) {
-				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ scroll , 0 }, lmtex, updateData);
+				DrawGLPoly(p, image->texnum, surf->lightmaptexturenum, defines | UPLIGHTMAPPED | (dFlag* DYNAMIC), float2{ scroll , 0 }, lmtex, updateData);
 				updateData = nullptr;
 			}
 		}
 		else {
 			for (p = surf->polys; p; p = p->chain) {
-				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ 0 , 0 }, lmtex, updateData);
+				DrawGLPoly(p, image->texnum, surf->lightmaptexturenum, defines | UPLIGHTMAPPED | (dFlag* DYNAMIC), float2{ 0 , 0 }, lmtex, updateData);
 				updateData = nullptr;
 			}
 		}
@@ -544,19 +559,14 @@ static void GL_RenderLightmappedPoly(msurface_t* surf, uint64_t defines) {
 				scroll = -64.0;
 
 			for (p = surf->polys; p; p = p->chain) {
-
-
-				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ scroll , 0 }, lightmap_textures + surf->lightmaptexturenum);
-
+				DrawGLPoly(p, image->texnum, surf->lightmaptexturenum , defines | UPLIGHTMAPPED, float2{ scroll , 0 }, lightmap_textures + surf->lightmaptexturenum);
 			}
 		}
 		else {
 			//PGM
 			//==========
 			for (p = surf->polys; p; p = p->chain) {
-
-				DrawGLPoly(p, image->texnum, defines | UPLIGHTMAPPED, float2{ 0 , 0 }, lightmap_textures + surf->lightmaptexturenum);
-
+				DrawGLPoly(p, image->texnum, surf->lightmaptexturenum, defines | UPLIGHTMAPPED, float2{ 0 , 0 }, lightmap_textures + surf->lightmaptexturenum);
 			}
 			//==========
 			//PGM
@@ -1056,7 +1066,7 @@ static void LM_UploadBlock(qboolean dynamic) {
 		for (int i = 0; i < BLOCK_WIDTH * BLOCK_HEIGHT * 4; i++) {
 			data[i] = gl_lms.lightmap_buffer[i];
 		}
-
+		
 		ImageUpdate updateData {
 			lightmap_textures + texture,
 			ImageBox{0, 0, 32, height},
@@ -1213,10 +1223,7 @@ void GL_CreateSurfaceLightmap(msurface_t* surf) {
 	R_SetCacheState(surf);
 	R_BuildLightMap(surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES);
 }
-
-unsigned dynamicLightMap[128 * 128 * MAX_LIGHTMAPS];
-unsigned nonDynamicLightMap[128 * 128 * MAX_LIGHTMAPS];
-unsigned dynamicLightMapUpdateFlag[MAX_LIGHTMAPS];
+unsigned dynamicLightMapUpdateFlag;
 /*
 ==================
 GL_BeginBuildingLightmaps
@@ -1226,7 +1233,6 @@ GL_BeginBuildingLightmaps
 void GL_BeginBuildingLightmaps(model_t* m) {
 	static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
 	int				i;
-	unsigned		dummy[128 * 128];
 
 	memset(gl_lms.allocated, 0, sizeof(gl_lms.allocated));
 
@@ -1267,7 +1273,7 @@ void GL_BeginBuildingLightmaps(model_t* m) {
 	** format then we should change this code to use real alpha maps.
 	*/
 	
-	RD.RegisterTexture(lightmap_textures + 0, BLOCK_WIDTH, BLOCK_HEIGHT, dummy, true);
+	RD.RegisterTexture(lightmap_textures + 0, BLOCK_WIDTH*MAX_LIGHTMAPS, BLOCK_HEIGHT, dynamicLightMap.GetBufferPtr(), true);
 
 }
 
