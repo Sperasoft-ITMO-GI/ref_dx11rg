@@ -445,7 +445,7 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 
 
 	int index = 0;
-	result.pt = EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 	result.frames.resize(num_frames);
 	//mod->realModel.frames.shrink_to_fit();;
 	//for (int frameIndex = 0; frameIndex < num_frames; frameIndex++) {
@@ -456,7 +456,7 @@ FramedModelData RegistrationManager::LoadAliasModel(model_t* mod, void* file) {
 	//	}
 	//}
 
-	result.pt = EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
+	result.pt = Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 	//dx11Model.indexes.resize(header.num_tris * 3);
 	//dx11Model.verticies.resize(header.num_tris * 3);
 	//dx11Model.primitiveCount = header.num_tris;

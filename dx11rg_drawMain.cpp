@@ -375,7 +375,7 @@ void R_DrawParticles(void)
     particles.vertixes.clear();
     particles.indexes.clear();
     ParticleVertex particle;
-    particles.pt = PRIMITIVETYPE_POINTLIST_EXT;
+    particles.pt = Renderer::PrimitiveType::PRIMITIVETYPE_POINTLIST_EXT;
     particles.primitiveCount = r_newrefdef.num_particles;
     for (i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++)
     {

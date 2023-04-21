@@ -158,7 +158,7 @@ void DrawGLPoly(glpoly_t* p, int texNum, int ligntTexShift, uint64_t defines, fl
 			}
 		}
 
-		UPModelMesh model = { EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+		UPModelData model = { Renderer::PrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
 			p->numverts - 2, vect, indexes };
 
 

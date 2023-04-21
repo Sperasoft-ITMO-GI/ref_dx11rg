@@ -57,7 +57,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 	InitWindow(L"Quake 2", width, height, x, y, fullscreen);
 
-	RD.InitDevice({windowState.hWnd, windowState.width, windowState.height});
+	RD.InitDevice(windowState.hWnd, windowState.width, windowState.height);
 	
 	ReloadShaders();
 
@@ -98,7 +98,7 @@ qboolean R_Init(void* hinstance, void* winProc) {
 
 void ReloadShaders() {
 	printf("Shaders recompiled.\n");
-	RD.InitShaders("ref_dx11rg\\DX11RenderEngine\\QuakeRenderEngine\\Shaders\\");
+	RD.InitShaders("E:\\Quake-2\\ref_dx11rg\\DX11RenderEngine\\DX11RenderEngine\\CoreRenderSystem\\Renderers\\Shaders\\");
 	
 }
 
